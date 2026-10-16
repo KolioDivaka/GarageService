@@ -4,30 +4,23 @@
 
 #include "Vehicle.h"
 
-#include <chrono>
-#include <cmath>
-#include <bits/chrono.h>
-
-
-short Vehicle::getCurrentYear() {
-    const auto now = chrono::system_clock::now();
-    const chrono::year_month_day ymd{floor<chrono::days>(now)};
-
-    return static_cast<short>(static_cast<int>(ymd.year()));
-}
-
 Vehicle::Vehicle() {
-    this->carBrand = "Unknown";
-    this->carModel = "Unknown";
-    this->regNumber = "XXXXXXX";
-    this->yearOfMaking = 0000;
-
+    this->vehicleId = 0;
+    this->customerId = 0;
+    this->vehicleBrand = "Unknown";
+    this->vehicleModel = "Unknown";
+    this->vehicleRegNumber = "Unknown";
+    this->yearOfManufacture = 0;
 }
 
-Vehicle::Vehicle(const string &carBrand, const string &carModel, const string &regNumber, short yearOfMaking) {
-    this->carBrand = carBrand;
-    this->carModel = carModel;
-    this->regNumber = regNumber;
-    this->yearOfMaking = yearOfMaking;
+Vehicle::Vehicle(int vehicleId, int customerId, const std::string &vehicleBrand, const std::string &vehicleModel,
+    const std::string &vehicleRegNumber, short yearOfManufacture) {
+    setVehicleId(vehicleId);
+    setCustomerId(customerId);
+    setVehicleBrand(vehicleBrand);
+    setVehicleModel(vehicleModel);
+    setVehicleRegNumber(vehicleRegNumber);
+    setYearOfManufacture(yearOfManufacture);
+
 }
 
