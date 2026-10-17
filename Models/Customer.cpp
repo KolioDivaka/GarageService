@@ -19,7 +19,7 @@ Customer::Customer(int customerId, const std::string &name,const std::string &ph
 }
 
 void Customer::setCustomerId(int customer_id) {
-    if ( customer_id > 0) {
+    if ( customer_id < 0) {
        throw std::invalid_argument("Customer Id cannot be negative!!!");
     }
         this->customerId = customer_id;
@@ -39,8 +39,9 @@ void Customer::setPhoneNumber(const std::string &new_phone_number) {
     const std::regex pattern(R"(^\+?[\s\-\(\).]*(?:[0-9][\s\-\(\).]*){6,14}[0-9]$)");
 
     if (std::regex_match(new_phone_number, pattern)) {
-         throw std::invalid_argument("Invalid phone number format: " + new_phone_number);
+         this->phoneNumber = new_phone_number;
+        return;
     }
+    throw std::invalid_argument("Invalid phone number format: " + new_phone_number);
 
-    this->phoneNumber = new_phone_number;
 }

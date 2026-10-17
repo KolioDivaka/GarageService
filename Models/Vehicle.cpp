@@ -24,3 +24,17 @@ Vehicle::Vehicle(int vehicleId, int customerId, const std::string &vehicleBrand,
 
 }
 
+std::string Vehicle::normalizeRegNumber(const std::string &regNumber) {
+    std::string normalized;
+
+    for (unsigned char ch : regNumber) {
+        if (std::isspace(ch) || ch == '-') {
+            continue;
+        }
+
+        normalized += static_cast<char>(std::toupper(ch));
+    }
+
+    return normalized;
+}
+

@@ -57,7 +57,7 @@ public:
         }
 
         void setVehicleId(int vehicle_id) {
-                if (vehicle_id >0) {
+                if (vehicle_id < 0) {
                         throw std::invalid_argument("Id cannot be negative!!! ");
                 }
                 this->vehicleId = vehicle_id;
@@ -72,14 +72,14 @@ public:
 
         void setVehicleModel(const std::string& vehicle_model) {
                 if (vehicle_model.find_first_not_of(" \t\n\r") == std::string::npos) {
-                        throw std::invalid_argument("Name cannot be empty!");
+                        throw std::invalid_argument("Vehicle model cannot be empty!");
                 }
                 this->vehicleModel = vehicle_model;
 
         }
         void setVehicleBrand(const std::string& vehicle_brand) {
                 if (vehicle_brand.find_first_not_of(" \t\n\r") == std::string::npos) {
-                        throw std::invalid_argument("Name cannot be empty!");
+                        throw std::invalid_argument("Vehicle brand cannot be empty!");
                 }
                 this->vehicleBrand = vehicle_brand;
 
@@ -95,19 +95,21 @@ public:
         }
 
         void setVehicleRegNumber(const std::string& new_reg_number) {
-                const std::regex pattern(R"(^[\s\-]*([A-Za-z0-9][\s\-]*){2,15}$)");
+                const std::string normalized = normalizeRegNumber(new_reg_number);
 
-                if (std::regex_match(new_reg_number, pattern)) {
-                        // Optional but recommended: Convert the valid plate to uppercase for consistency
-                        std::string normalized_reg = new_reg_number;
-                        std::transform(normalized_reg.begin(), normalized_reg.end(), normalized_reg.begin(),
-                                       [](unsigned char c) { return std::toupper(c); });
+                static const std::regex pattern(R"([A-Z0-9]{2,15})");
 
-                        this->vehicleRegNumber = normalized_reg;
-                } else {
-                        throw std::invalid_argument("Invalid vehicle registration format: " + new_reg_number);
+                if (!std::regex_match(normalized, pattern)) {
+                        throw std::invalid_argument(
+                            "Invalid registration number! Use 2 to 15 Latin letters "
+                            "or digits. Spaces and hyphens are ignored."
+                        );
                 }
+
+                this->vehicleRegNumber = normalized;
         }
+
+        static std::string normalizeRegNumber(const std::string& regNumber);
 
 };
 
