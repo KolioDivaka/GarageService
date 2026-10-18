@@ -29,13 +29,13 @@ private:
 
 private:
     void loadFiles();
+    void saveFiles() const;
     void validateLoadedData() const;
     void updateNextIds();
 
 
 public:
     AutoWorkshopManager( FileManager& fileManager);
-
     AutoWorkshopManager(const AutoWorkshopManager& other);
 };
 

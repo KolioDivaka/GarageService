@@ -22,6 +22,12 @@ void AutoWorkshopManager::loadFiles() {
     updateNextIds();
 }
 
+void AutoWorkshopManager::saveFiles() const {
+    fileManager.saveCustomers(customers);
+    fileManager.saveVehicles(vehicles);
+    fileManager.saveRepairs(repairOrders);
+}
+
 void AutoWorkshopManager::validateLoadedData() const {
 
     unordered_set<int> customerIds;
