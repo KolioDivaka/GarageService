@@ -23,19 +23,19 @@ public:
     void setUnitPrice(double unit_price);
     void setQuantity(int newQuantity);
 
-    [[nodiscard]] std::string part_name() const {
+    [[nodiscard]] std::string getPartName() const {
         return partName;
     }
 
-    [[nodiscard]] std::string part_number() const {
+    [[nodiscard]] std::string getPartNumber() const {
         return partNumber;
     }
 
-    [[nodiscard]] double unit_price() const {
+    [[nodiscard]] double getUnitPrice() const {
         return unitPrice;
     }
 
-    [[nodiscard]] int quantity1() const {
+    [[nodiscard]] int getQuantity() const {
         return quantity;
     }
 

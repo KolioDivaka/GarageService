@@ -32,39 +32,39 @@ public:
         Vehicle(int vehicleId, int customerId, const std::string &vehicleBrand, const std::string &vehicleModel,
                 const std::string &vehicleRegNumber, short yearOfManufacture);
 
-        [[nodiscard]] int vehicle_id() const {
+        [[nodiscard]] int getVehicleId() const {
                 return vehicleId;
         }
 
-        [[nodiscard]] int customer_id() const {
+        [[nodiscard]] int getCustomerId() const {
                 return customerId;
         }
 
-        [[nodiscard]] std::string vehicle_brand() const {
+        [[nodiscard]] std::string getVehicleBrand() const {
                 return vehicleBrand;
         }
 
-        [[nodiscard]] std::string vehicle_model() const {
+        [[nodiscard]] std::string getVehicleModel() const {
                 return vehicleModel;
         }
 
-        [[nodiscard]] std::string vehicle_reg_number() const {
+        [[nodiscard]] std::string getVehicleRegNum() const {
                 return vehicleRegNumber;
         }
 
-        [[nodiscard]] short year_of_manufacture() const {
+        [[nodiscard]] short getYearOfManufacture() const {
                 return yearOfManufacture;
         }
 
         void setVehicleId(int vehicle_id) {
-                if (vehicle_id < 0) {
+                if (vehicle_id <= 0) {
                         throw std::invalid_argument("Id cannot be negative!!! ");
                 }
                 this->vehicleId = vehicle_id;
 
         }
         void setCustomerId(int customer_id) {
-                if (customer_id < 0) {
+                if (customer_id <= 0) {
                         throw std::invalid_argument("Customer Id cannot be negative!!!");
                 }
                 this->customerId = customer_id;

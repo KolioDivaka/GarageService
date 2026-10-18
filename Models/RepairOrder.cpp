@@ -13,7 +13,7 @@ RepairOrder::RepairOrder() {
     this->customerStatement = "";
     this->repairServices={};
     this->parts = {};
-    this->acceptedDate = {};
+    this->acceptedDate = std::chrono::system_clock::now();
     this->paidDate = std::nullopt;
     this->completedDate = std::nullopt;
 
@@ -45,21 +45,21 @@ RepairOrder::RepairOrder(int orderId, int customerId, int vehicleId, const std::
 }
 
 void RepairOrder::setOrderId(int order_id) {
-    if (order_id < 0 ) {
+    if (order_id <= 0 ) {
         throw std::logic_error("OrderId cannot be negative!");
     }
     this->orderId = order_id;
 }
 
 void RepairOrder::setCustomerId(int customer_id) {
-    if (customer_id < 0) {
+    if (customer_id <= 0) {
         throw std::logic_error("CustomerId cannot be negative!");
     }
     this->customerId = customer_id;
 }
 
 void RepairOrder::setVehicleId(int vehicle_id) {
-    if ( vehicle_id < 0 ) {
+    if ( vehicle_id <= 0 ) {
         throw std::logic_error("VehicleId cannot be negative!");
     }
     this->vehicleId = vehicle_id;
@@ -77,7 +77,10 @@ RepairStatus RepairOrder::getStatus() const {
 }
 
 void RepairOrder::startRepair() {
-    repairStatus = RepairStatus::InProgress;
+    if (repairStatus != RepairStatus::Accepted) {
+        throw std::logic_error("Only accepted repairs can be started!");
+    }
+    this->repairStatus = RepairStatus::InProgress;
 }
 
 void RepairOrder::completeRepair() {
@@ -96,6 +99,40 @@ void RepairOrder::payRepair() {
     paidDate = std::chrono::system_clock::now();
 }
 
+void RepairOrder::addRepairService(const RepairService &service) {
+    ensureEditable();
+    repairServices.push_back(service);
+}
+
+void RepairOrder::addPart(const Part &part) {
+    ensureEditable();
+    parts.push_back(part);
+}
+
+double RepairOrder::calculateLaborCost() const {
+    double total = 0.0;
+
+    for (const RepairService &repairService : repairServices) {
+        total += repairService.calculateCost();
+    }
+    return total;
+}
+
+double RepairOrder::calculatePartsCost() const {
+    double total = 0.0;
+
+    for ( const Part &part : parts) {
+        total += part.calculateCost();
+    }
+    return total;
+
+}
+
+double RepairOrder::calculateTotalCost() const {
+    return calculatePartsCost()+ calculateLaborCost();
+}
+
+
 void RepairOrder::validateState() const {
     switch (repairStatus) {
         case RepairStatus::Accepted:
@@ -111,7 +148,7 @@ void RepairOrder::validateState() const {
             break;
             case RepairStatus::Paid:
             if (!completedDate.has_value() || !paidDate.has_value()) {
-                throw std::invalid_argument("A completed repair must have completion and payment date");
+                throw std::invalid_argument("A paid repair must have completion and payment date");
             }
             break;
             default:
@@ -124,5 +161,11 @@ void RepairOrder::validateState() const {
 
     if (paidDate.has_value() && *paidDate< *completedDate) {
         throw std::invalid_argument("Paid date cannot be less than completed date!");
+    }
+}
+
+void RepairOrder::ensureEditable() const {
+    if (repairStatus != RepairStatus::Accepted && repairStatus != RepairStatus::InProgress) {
+        throw std::logic_error("Complete or paid orders cannot be modified!");
     }
 }

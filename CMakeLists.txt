@@ -15,4 +15,6 @@ add_executable(GarageService main.cpp
         Models/Part.cpp
         Models/Part.h
         Models/RepairStatus.h
+        Services/AutoWorkshopManager.cpp
+        Services/AutoWorkshopManager.h
 )

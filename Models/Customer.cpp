@@ -19,7 +19,7 @@ Customer::Customer(int customerId, const std::string &name,const std::string &ph
 }
 
 void Customer::setCustomerId(int customer_id) {
-    if ( customer_id < 0) {
+    if ( customer_id <= 0) {
        throw std::invalid_argument("Customer Id cannot be negative!!!");
     }
         this->customerId = customer_id;

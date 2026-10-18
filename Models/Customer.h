@@ -17,15 +17,15 @@ public:
     Customer();
     Customer(int customerId, const std::string& name,const std::string& phoneNumber);
 
-    [[nodiscard]] int customer_id() const {
+    [[nodiscard]] int getCustomerId() const {
         return customerId;
     }
 
-    [[nodiscard]] std::string name1() const {
+    [[nodiscard]] std::string getName() const {
         return name;
     }
 
-    [[nodiscard]] std::string phone_number() const {
+    [[nodiscard]] std::string getPhoneNumber() const {
         return phoneNumber;
     }
 

@@ -36,6 +36,7 @@ private:
 
     //
     void validateState() const;
+    void ensureEditable() const;
 
 public:
     RepairOrder();
@@ -58,10 +59,55 @@ public:
 
 
     [[nodiscard]]RepairStatus getStatus() const;
+    //These methods act like setters for the Status and Date
     void startRepair();
     void completeRepair();
     void payRepair();
 
+    [[nodiscard]] int getOrderId() const {
+        return orderId;
+    }
+
+    [[nodiscard]] int getCustomerId() const {
+        return customerId;
+    }
+
+    [[nodiscard]] int getVehicleId() const {
+        return vehicleId;
+    }
+
+    [[nodiscard]] std::string getCustomerStatement() const {
+        return customerStatement;
+    }
+
+    [[nodiscard]] std::vector<RepairService> getServices() const {
+        return repairServices;
+    }
+
+    [[nodiscard]] std::vector<Part> getParts() const {
+        return parts;
+    }
+
+
+    [[nodiscard]] TimePoint getAcceptedDate() const {
+        return acceptedDate;
+    }
+
+    [[nodiscard]] std::optional<TimePoint> getCompleteDate() const {
+        return completedDate;
+    }
+
+    [[nodiscard]] std::optional<TimePoint> getPaidDate() const {
+        return paidDate;
+    }
+
+    void addRepairService(const RepairService& service);
+    void addPart(const Part& part);
+
+
+    [[nodiscard]] double calculateLaborCost() const;
+    [[nodiscard]] double calculatePartsCost() const;
+    [[nodiscard]] double calculateTotalCost() const;
 };
 
 
