@@ -6,18 +6,18 @@
 #define GARAGESERVICE_AUTOWORKSHOPMANAGER_H
 #include <vector>
 
+#include "FileManager.h"
 #include "../Models/Customer.h"
 #include "../Models/Vehicle.h"
 #include "../Models/RepairOrder.h"
 
 
 class Vehicle;
+class FileManager;
 
 class AutoWorkshopManager {
 private:
-    static constexpr const char* CUSTOMERS_FILE = "customers.txt";
-    static constexpr const char* VEHICLES_FILE = "vehicles.txt";
-    static constexpr const char* REPAIR_ORDERS_FILE = "repair_orders.txt";
+    FileManager& fileManager;
 
     std::vector<Customer> customers;
     std::vector<Vehicle> vehicles;
@@ -29,16 +29,12 @@ private:
 
 private:
     void loadFiles();
-    void loadCustomers();
-    void loadVehicles();
-    void loadRepairOrders();
-
     void validateLoadedData() const;
     void updateNextIds();
 
 
 public:
-    AutoWorkshopManager();
+    AutoWorkshopManager( FileManager& fileManager);
 
     AutoWorkshopManager(const AutoWorkshopManager& other);
 };
