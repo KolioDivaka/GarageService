@@ -13,6 +13,7 @@ namespace {
     using TimePoint = std::chrono::system_clock::time_point;
 
     std::optional<TimePoint> readSavedDate(const std::string& text);
+    string writeSavedDate(const optional<TimePoint>& date);
 }
 
 std::vector<Customer> FileManager::loadCustomers() const { // NOLINT(*-convert-member-functions-to-static)
@@ -187,7 +188,7 @@ std::vector<Vehicle> FileManager::loadVehicles() const { // NOLINT(*-convert-mem
 
 std::vector<RepairOrder> FileManager::loadRepairOrders() const { // NOLINT(*-convert-member-functions-to-static)
 
-    if (filesystem::exists(REPAIR_ORDERS_FILE)) {
+    if (!filesystem::exists(REPAIR_ORDERS_FILE)) {
         return {};
     }
 
@@ -310,14 +311,14 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const { // NOLINT(*-con
             const int serviceCount = readCount();
 
             for (int i = 0; i < serviceCount; ++i) {
-                readNextLine();
+                requireNextLine();
                 istringstream serviceRow(line);
 
                 string description;
                 double hours;
                 double hourlyRate;
 
-                if (!(serviceRow >> description >> hours >> hourlyRate)) {
+                if (!(serviceRow >> quoted(description) >> hours >> hourlyRate)) {
                     throw std::runtime_error("Invalid repair service!");
                 }
 
@@ -330,7 +331,7 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const { // NOLINT(*-con
             const int partCount = readCount();
 
             for (int i = 0; i < partCount; ++i) {
-                readNextLine();
+                requireNextLine();
                 istringstream partRow(line);
 
                 string name;
@@ -376,6 +377,167 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const { // NOLINT(*-con
     return loadedOrders;
 }
 
+void FileManager::saveCustomers(const std::vector<Customer> &customers) const {
+    const filesystem::path targetPath = CUSTOMERS_FILE;
+
+    filesystem::path tempPath = targetPath;
+    tempPath+= ".tmp";
+
+    ofstream file(tempPath,ios::out | ios::trunc);
+
+    if (!file.is_open()) {
+        throw runtime_error("Cannot open temporary customers file" + tempPath.string());
+    }
+
+    for (const Customer& customer : customers) {
+        file<< customer.getCustomerId()<< ' '
+        << quoted(customer.getName()) << ' '
+        << quoted(customer.getPhoneNumber()) << '\n';
+    }
+    file.close();
+
+    if (!file) {
+        throw runtime_error("Failed to write customers file: " + tempPath.string());
+    }
+
+    error_code error;
+    filesystem::rename(tempPath, targetPath, error);
+    if (error) {
+        throw std::runtime_error("Cannot replace customers file: " + error.message());
+    }
+}
+
+void FileManager::saveVehicles(const std::vector<Vehicle> &vehicles) const {
+    const std::filesystem::path targetPath = VEHICLES_FILE;
+
+    std::filesystem::path tempPath = targetPath;
+    tempPath += ".tmp";
+
+    std::ofstream file(tempPath, std::ios::out | std::ios::trunc);
+
+    if (!file.is_open()) {
+        throw std::runtime_error(
+            "Cannot open temporary vehicles file: "
+            + tempPath.string()
+        );
+    }
+
+    for (const Vehicle& vehicle : vehicles) {
+        file << vehicle.getVehicleId() << ' '
+             << vehicle.getCustomerId() << ' '
+             << std::quoted(vehicle.getVehicleBrand()) << ' '
+             << std::quoted(vehicle.getVehicleModel()) << ' '
+             << std::quoted(vehicle.getVehicleRegNum()) << ' '
+             << vehicle.getYearOfManufacture() << '\n';
+    }
+
+    file.close();
+
+    if (!file) {
+        throw std::runtime_error(
+            "Failed to write vehicles file: "
+            + tempPath.string()
+        );
+    }
+
+    std::error_code error;
+    std::filesystem::rename(tempPath, targetPath, error);
+
+    if (error) {
+        throw std::runtime_error(
+            "Cannot replace vehicles file: " + error.message()
+        );
+    }
+}
+
+void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const {
+
+    constexpr size_t MAX_ITEM_PER_ORDER = 10000;
+
+    const filesystem::path targetPath = REPAIR_ORDERS_FILE;
+
+    filesystem::path tempPath = targetPath;
+    tempPath += ".tmp";
+
+    ofstream file(tempPath,ios::out | ios::trunc);
+
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open temporary repairs file: " + tempPath.string());
+    }
+
+    file << setprecision(
+        numeric_limits<double>::max_digits10);
+
+    for (const RepairOrder& order : orders) {
+        const auto& services = order.getServices();
+        const auto& parts = order.getParts();
+
+        if (services.size() > MAX_ITEM_PER_ORDER||
+            parts.size() > MAX_ITEM_PER_ORDER) {
+            throw std::runtime_error("Too many items in repair order: "
+                + to_string(order.getOrderId()));
+        }
+
+        int statusCode;
+
+        switch (order.getStatus()) {
+            case RepairStatus::Accepted:
+                statusCode = 0;
+                break;
+            case RepairStatus::InProgress:
+                statusCode = 1;
+                break;
+            case RepairStatus::Completed:
+                statusCode = 2;
+                break;
+            case RepairStatus::Paid:
+                statusCode = 3;
+                break;
+            default:
+                throw runtime_error("Invalid repair status!");
+        }
+
+        file<< order.getOrderId() << ' '
+        << order.getCustomerId() << ' '
+        << order.getVehicleId()<< ' '
+        << statusCode << ' '
+        << writeSavedDate( order.getAcceptedDate() ) << ' '
+        << writeSavedDate( order.getCompleteDate() ) << ' '
+        << writeSavedDate( order.getPaidDate() ) << ' '
+        << quoted(order.getCustomerStatement())<< '\n';
+
+        file<<services.size()<<'\n';
+
+        for (const RepairService& service : services) {
+            file<< quoted(service.getDerscription())<<' '
+            << service.getHoursLabor() << ' '
+            << service.getHourlyRate() << '\n';
+        }
+        file << parts.size()<<'\n';
+
+        for (const Part& part : parts) {
+            file<< quoted(part.getPartName()) << ' '
+            << quoted(part.getPartNumber()) << ' '
+            << part.getUnitPrice() << ' '
+            << part.getQuantity() << '\n';
+        }
+    }
+
+    file.close();
+    if (!file) {
+        throw std::runtime_error(
+            "Failed to write repairs file: " + tempPath.string());
+    }
+
+    error_code error;
+    filesystem::rename(tempPath, targetPath, error);
+    if (error) {
+        throw std::runtime_error("Cannot replace repairs file: " + error.message());
+    }
+}
+
+
+
 namespace {
     using TimePoint = std::chrono::system_clock::time_point;
 
@@ -417,4 +579,35 @@ namespace {
             )
         };
     }
+
+    string writeSavedDate(const optional<TimePoint>& date) {
+        if (!date.has_value()) {
+            return "-";
+        }
+
+        const std::time_t rawTime =
+            std::chrono::system_clock::to_time_t(*date);
+
+        const std::tm* localTime = std::localtime(&rawTime);
+
+        if (localTime == nullptr) {
+            throw std::runtime_error(
+                "Cannot convert saved date!"
+            );
+        }
+
+        const std::tm calendarDate = *localTime;
+
+        std::ostringstream result;
+        result << std::put_time(&calendarDate, "%Y-%m-%d");
+
+        if (!result) {
+            throw std::runtime_error(
+                "Cannot format saved date!"
+            );
+        }
+
+        return result.str();
+    }
+
 }

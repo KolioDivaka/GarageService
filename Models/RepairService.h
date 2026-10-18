@@ -18,15 +18,15 @@ public:
     RepairService();
     RepairService(const std::string& description ,double hoursLabor, double hourlyRate);
 
-    [[nodiscard]] std::string description1() const {
+    [[nodiscard]] std::string getDerscription() const {
         return description;
     }
 
-    [[nodiscard]] double hours_labor() const {
+    [[nodiscard]] double getHoursLabor() const {
         return hoursLabor;
     }
 
-    [[nodiscard]] double hourly_rate() const {
+    [[nodiscard]] double getHourlyRate() const {
         return hourlyRate;
     }
 

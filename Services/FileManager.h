@@ -19,10 +19,18 @@ private:
     static constexpr const char* VEHICLES_FILE = "vehicles.txt";
     static constexpr const char* REPAIR_ORDERS_FILE = "repair_orders.txt";
 
+
 public:
     [[nodiscard]] std::vector<Customer> loadCustomers() const;
     [[nodiscard]] std::vector<Vehicle> loadVehicles() const;
     [[nodiscard]] std::vector<RepairOrder> loadRepairOrders() const;
+
+    void saveCustomers(const std::vector<Customer>& customers) const;
+    void saveVehicles(const std::vector<Vehicle>& vehicles) const;
+    void saveRepairs(const std::vector<RepairOrder>& orders) const;
+
+
+
 
 };
 
