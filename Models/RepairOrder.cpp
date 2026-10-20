@@ -72,6 +72,17 @@ void RepairOrder::setCustomerStatement(const std::string& customer_statement) {
     this->customerStatement = customer_statement;
 }
 
+void RepairOrder::setStatus(const RepairStatus &repair_status) {
+    if (repairStatus == RepairStatus::Completed && repair_status == RepairStatus::Accepted) {
+        throw std::invalid_argument("Cannot change status from Completed back to Accepted!");
+    }
+
+    if (repairStatus == RepairStatus::Paid && repair_status != RepairStatus::Paid) {
+        throw std::invalid_argument("Cannot change status of a paid order!");
+    }
+    this->repairStatus = repair_status;
+}
+
 RepairStatus RepairOrder::getStatus() const {
     return repairStatus;
 }

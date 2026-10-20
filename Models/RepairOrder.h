@@ -56,6 +56,7 @@ public:
     void setCustomerId(int customer_id);
     void setVehicleId(int vehicle_id);
     void setCustomerStatement(const std::string& customer_statement);
+    void setStatus(const RepairStatus& repair_status);
 
 
     [[nodiscard]]RepairStatus getStatus() const;

@@ -377,7 +377,7 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const { // NOLINT(*-con
     return loadedOrders;
 }
 
-void FileManager::saveCustomers(const std::vector<Customer> &customers) const {
+void FileManager::saveCustomers(const std::vector<Customer> &customers) const { // NOLINT(*-convert-member-functions-to-static)
     const filesystem::path targetPath = CUSTOMERS_FILE;
 
     filesystem::path tempPath = targetPath;
@@ -407,7 +407,7 @@ void FileManager::saveCustomers(const std::vector<Customer> &customers) const {
     }
 }
 
-void FileManager::saveVehicles(const std::vector<Vehicle> &vehicles) const {
+void FileManager::saveVehicles(const std::vector<Vehicle> &vehicles) const { // NOLINT(*-convert-member-functions-to-static)
     const std::filesystem::path targetPath = VEHICLES_FILE;
 
     std::filesystem::path tempPath = targetPath;
@@ -450,7 +450,7 @@ void FileManager::saveVehicles(const std::vector<Vehicle> &vehicles) const {
     }
 }
 
-void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const {
+void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const { // NOLINT(*-convert-member-functions-to-static)
 
     constexpr size_t MAX_ITEM_PER_ORDER = 10000;
 
