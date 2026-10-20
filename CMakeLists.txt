@@ -19,4 +19,12 @@ add_executable(GarageService main.cpp
         Services/AutoWorkshopManager.h
         Services/FileManager.cpp
         Services/FileManager.h
+        Repositories/CustomerRepository.cpp
+        Repositories/CustomerRepository.h
+        Repositories/VehicleRepository.cpp
+        Repositories/VehicleRepository.h
+        Repositories/RepairOrderRepository.cpp
+        Repositories/RepairOrderRepository.h
+        Services/DataLoader.cpp
+        Services/DataLoader.h
 )
