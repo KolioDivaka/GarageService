@@ -14,6 +14,20 @@
 #include "../Repositories/RepairOrderRepository.h"
 
 using namespace std;
+namespace {
+    string normalizeForSearch(const string& text) {
+        string result;
+        result.reserve(text.size());
+
+        for (const unsigned char ch : text) {
+            if (!isblank(ch)) {
+                result += static_cast<char>(tolower(ch));
+            }
+        }
+
+        return result;
+    }
+}
 
 void AutoWorkshopManager::addCustomer(const Customer &customer) {
     customerRepo.addCustomer(customer);
@@ -52,6 +66,26 @@ void AutoWorkshopManager::editCustomer(int customerId, const string &name, const
     fileManager.saveCustomers(customerRepo.getCustomers());
 }
 
+vector<Customer> AutoWorkshopManager::findCustomersByName(const string &namePart) const {
+    const string needle = normalizeForSearch(namePart);
+
+    if (needle.empty()) {
+        throw invalid_argument("Empty search!");
+    }
+
+    vector<Customer> result;
+
+    for (const Customer& customer : customerRepo.getCustomers()) {
+        if (normalizeForSearch(customer.getName()).find(needle)
+            != string::npos) {
+            result.push_back(customer);
+            }
+    }
+
+    return result;
+
+}
+
 void AutoWorkshopManager::addVehicle(const Vehicle &vehicle) {
 
     if (!customerRepo.customerExists(vehicle.getCustomerId())) {
@@ -65,6 +99,23 @@ void AutoWorkshopManager::editVehicle(int vehicleId, const std::string &brand, c
     const std::string &regNumber, std::optional<int> yearOfManufacture) {
     vehicleRepo.editVehicle(vehicleId, brand, model, regNumber, yearOfManufacture);
     fileManager.saveVehicles(vehicleRepo.getVehicles());
+}
+
+vector<Vehicle> AutoWorkshopManager::getVehiclesByCustomerId(int customerId) const {
+
+    vector<Vehicle> result;
+
+    for (const Vehicle& v : vehicleRepo.getVehicles()) {
+        if (v.getCustomerId() == customerId) {
+            result.push_back(v);
+        }
+    }
+
+    return result;
+}
+
+const Vehicle & AutoWorkshopManager::findVehicleByRegNum(const std::string &regNum) const {
+    return vehicleRepo.findByRegNum(regNum);
 }
 
 void AutoWorkshopManager::startRepair(int orderId) {
@@ -110,6 +161,33 @@ const RepairOrder * AutoWorkshopManager::findActiveRepairByRegNum(const string &
 
     // След това търсим по ID на колата в поръчките
     return orderRepo.findActiveRepairByVehicleId(foundVehicleId);
+}
+
+vector<RepairOrder> AutoWorkshopManager::getRepairHistoryByRegNum(const string &regNum) const {
+    const Vehicle* vehicle = nullptr;
+
+    for (const Vehicle& v : vehicleRepo.getVehicles()) {
+        if (v.getVehicleRegNum() == regNum) {
+            vehicle = &v;
+            break;
+        }
+    }
+
+    if (!vehicle) {
+        throw invalid_argument(
+            "Cannot find vehicle with registration number: " + regNum
+        );
+    }
+
+    vector<RepairOrder> history;
+
+    for (const RepairOrder& order : orderRepo.getRepairOrders()) {
+        if (order.getVehicleId() == vehicle->getVehicleId()) {
+            history.push_back(order);
+        }
+    }
+
+    return history;
 }
 
 double AutoWorkshopManager::calculateTurnover(const TimePoint &from, const TimePoint &to) const {

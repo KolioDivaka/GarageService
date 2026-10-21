@@ -20,6 +20,8 @@ public:
       return nextVehicleId;
    }
 
+
+
 private:
    vector<Vehicle> vehicles;
    int nextVehicleId = 1;
@@ -29,7 +31,7 @@ public:
    [[nodiscard]] bool vehicleExists(int vehicleId) const;
    void addVehicle( const Vehicle &vehicle );
    void editVehicle( int vehicleId, const string& brand, const string& model, const string& regNumber, optional<int> yearOfManufacture = std::nullopt );
-
+   const Vehicle& findByRegNum(const std::string& regNum) const;
 
 private:
    void updateNextVehicleId();

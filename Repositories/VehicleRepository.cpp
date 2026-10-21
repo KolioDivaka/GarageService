@@ -108,6 +108,18 @@ void VehicleRepository::editVehicle(int vehicleId, const string &brand, const st
     vehicle = updatedVehicle;
 }
 
+const Vehicle & VehicleRepository::findByRegNum(const std::string &regNum) const {
+    for (const Vehicle& vehicle : vehicles) {
+        if (vehicle.getVehicleRegNum() == regNum) {
+            return vehicle;
+        }
+    }
+
+    throw std::invalid_argument(
+        "Cannot find vehicle with registration number: " + regNum
+    );
+}
+
 void VehicleRepository::updateNextVehicleId() {
     int maxVehicleId = 0;
 
