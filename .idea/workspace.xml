@@ -32,16 +32,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e40acb6c-1601-4e53-8dc2-47572b8dfac9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Models/RepairBill.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/RepairBill.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/ClientHandler.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/ClientHandler.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Repositories/VehicleRepository.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Repositories/VehicleRepository.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Repositories/VehicleRepository.h" beforeDir="false" afterPath="$PROJECT_DIR$/Repositories/VehicleRepository.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/RepairOrder.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairOrder.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/RepairOrder.h" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairOrder.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/RepairService.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairService.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/RepairService.h" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairService.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/AutoWorkshopManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Services/AutoWorkshopManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/AutoWorkshopManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Services/AutoWorkshopManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/ClientHandler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Services/ClientHandler.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/ClientHandler.h" beforeDir="false" afterPath="$PROJECT_DIR$/Services/ClientHandler.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

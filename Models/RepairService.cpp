@@ -3,7 +3,9 @@
 //
 
 #include "RepairService.h"
-
+#include <ostream>
+#include <sstream>
+#include <string>
 
 RepairService::RepairService() {
     this->description = "Repair Unknow!";
@@ -17,3 +19,10 @@ RepairService::RepairService(const std::string &description, double hoursLabor, 
     setHourlyRate(hourlyRate);
 }
 
+std::ostream & operator<<(std::ostream &out, const RepairService &service) {
+    out << service.getDerscription()
+        << " — " << service.getHoursLabor() << "h x " << service.getHourlyRate()
+        << " = " << service.calculateCost();
+    return out;
+
+}

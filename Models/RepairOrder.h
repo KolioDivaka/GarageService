@@ -109,6 +109,8 @@ public:
     [[nodiscard]] double calculateLaborCost() const;
     [[nodiscard]] double calculatePartsCost() const;
     [[nodiscard]] double calculateTotalCost() const;
+
+    friend std::ostream& operator<<(std::ostream& out, const RepairOrder& order);
 };
 
 

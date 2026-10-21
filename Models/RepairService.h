@@ -56,6 +56,8 @@ public:
         return hoursLabor * hourlyRate;
     }
 
+    friend std::ostream& operator<<(std::ostream& out,
+                                const RepairService& service);
 
 };
 

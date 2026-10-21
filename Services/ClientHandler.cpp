@@ -5,7 +5,8 @@
 #include "ClientHandler.h"
 
 #include <iostream>
-
+#include <sstream>
+#include "../Models/RepairBill.h"
 namespace {
     class InputClosed final : public std::exception {
         public:
@@ -13,6 +14,16 @@ namespace {
             return "Console input is closed.";
         }
     };
+
+    std::string toString(RepairStatus status) {
+        switch (status) {
+            case RepairStatus::Accepted: return "Accepted";
+            case RepairStatus::InProgress: return "In Progress";
+            case RepairStatus::Completed: return "Completed";
+            case RepairStatus::Paid: return "Paid";
+            default: return "Unknown";
+        }
+    }
 }
 
 string ClientHandler::readLine(const string &prompt) {
@@ -77,6 +88,30 @@ optional<int> ClientHandler::readOptionalInt(const string &prompt) {
         }
 
         std::cout << "Enter a whole number or leave empty.\n";
+    }
+}
+
+double ClientHandler::readPositiveDouble(const std::string &prompt) const {
+    while (true) {
+        const std::string raw = readLine(prompt);
+
+        try {
+            std::size_t consumed = 0;
+            const double value = std::stod(raw, &consumed);
+
+            if (consumed != raw.size()) {
+                throw std::invalid_argument("");
+            }
+            if (value <= 0.0) {
+                std::cout << "The number must be positive. Try again.\n";
+                continue;
+            }
+
+            return value;
+        } catch (const std::exception&) {
+            std::cout << "Please enter a valid number "
+                         "(e.g. 12.50).\n";
+        }
     }
 }
 
@@ -197,6 +232,14 @@ int ClientHandler::chooseVehicle(int ownerId) {
 
 }
 
+void ClientHandler::showBill(int orderId) const {
+    const RepairOrder& order = manager.getOrderById(orderId);
+    const Customer& customer = manager.findCustomerById(order.getCustomerId());
+    const Vehicle& vehicle = manager.findVehicleById(order.getVehicleId());
+
+    std::cout << "\n" << RepairBill(order, customer, vehicle ) << "\n";
+}
+
 int ClientHandler::promptNewCustomer() {
 
     try {
@@ -236,6 +279,38 @@ void ClientHandler::handleEditCustomer() {
         }
     }
 
+void ClientHandler::promptNewService(int orderId) {
+
+    const std::string description = readLine("Service description: ");
+    const double hours = readPositiveDouble("Hours: ");
+    const double rate = readPositiveDouble("Hourly rate: ");
+
+    std::cout << "Add \"" << description << "\", "
+              << hours << " h x " << rate
+              << " = " << hours * rate << "? (y/n): ";
+
+    if (readLine("") == "y") {
+        manager.addRepairService(orderId, RepairService(description, hours, rate));
+        std::cout << "Service added.\n";
+    }
+}
+
+void ClientHandler::promptNewPart(int orderId) {
+    const std::string name = readLine("Part name: ");
+    const std::string number = readLine("Part number: ");
+    const double price = readPositiveDouble("Unit price: ");
+    const int qty = readPositiveInt("Quantity: ");
+
+    std::cout << "Add " << name << " (" << number << "), "
+              << qty << " x " << price
+              << " = " << qty * price << "? (y/n): ";
+
+    if (readLine("") == "y") {
+        manager.addParts(orderId, Part(name, number, price, qty));
+        std::cout << "Part added.\n";
+    }
+}
+
 int ClientHandler::promptNewVehicle(int presetCustomerId ) {
     const int customerId = (presetCustomerId != 0)
             ? presetCustomerId
@@ -263,6 +338,8 @@ int ClientHandler::promptNewVehicle(int presetCustomerId ) {
 
 
 }
+
+
 
 void ClientHandler::handleEditVehicle() {
     const std::string regNum = readLine("Vehicle registration number: ");
@@ -318,5 +395,112 @@ void ClientHandler::handleAcceptVehicle() {
                   << orderId << '\n';
     }catch (const std::exception &e) {
         std::cout <<"Failed to accept vehicle!" <<e.what() << endl;
+    }
+}
+
+void ClientHandler::handleOrderActions(int orderId) {
+
+     while (true) {
+        const RepairOrder& order = manager.getOrderById(orderId);
+
+        std::cout << "\n=== ORDER #" << orderId
+                  << " — " << toString(order.getStatus()) << " ===\n"
+                  << "1. Show service card\n";
+
+        switch (order.getStatus()) {
+            case RepairStatus::Accepted:
+                std::cout << "2. Start repair\n";
+                break;
+
+            case RepairStatus::InProgress:
+                std::cout << "2. Add service\n"
+                          << "3. Add part\n"
+                          << "4. Complete repair and issue bill\n";
+                break;
+
+            case RepairStatus::Completed:
+                std::cout << "2. Show bill\n"
+                          << "3. Register payment\n";
+                break;
+
+            case RepairStatus::Paid:
+                std::cout << "2. Show bill\n";
+                break;
+        }
+
+        std::cout << "0. Back\n";
+
+        const int choice = readInt("Choose: ");
+        if (choice == 0) {
+            return;
+        }
+
+        try {
+            if (choice == 1) {
+                std::cout << order;
+
+            } else if (order.getStatus() == RepairStatus::Accepted
+                       && choice == 2) {
+                manager.startRepair(orderId);
+                std::cout << "Repair started.\n";
+
+            } else if (order.getStatus() == RepairStatus::InProgress) {
+                if (choice == 2) {
+                    promptNewService(orderId);
+                } else if (choice == 3) {
+                    promptNewPart(orderId);
+                } else if (choice == 4) {
+                    manager.completeRepair(orderId);
+                    showBill(orderId);
+                } else {
+                    std::cout << "Unknown option.\n";
+                }
+
+            } else if (order.getStatus() == RepairStatus::Completed) {
+                if (choice == 2) {
+                    showBill(orderId);
+                } else if (choice == 3) {
+                    manager.payRepair(orderId);
+                    std::cout << "Payment registered.\n";
+                } else {
+                    std::cout << "Unknown option.\n";
+                }
+
+            } else if (order.getStatus() == RepairStatus::Paid) {
+                if (choice == 2) {
+                    showBill(orderId);
+                } else {
+                    std::cout << "Unknown option.\n";
+                }
+            }
+        } catch (const std::exception& error) {
+            std::cerr << "Operation failed: " << error.what() << '\n';
+        }
+    }
+}
+
+void ClientHandler::handleFindByRegNum() {
+    try {
+        const std::string regNum = readLine("Registration number: ");
+
+        const Vehicle& vehicle = manager.findVehicleByRegNum(regNum);
+
+        std::cout << "\nVehicle: "
+                  << vehicle.getVehicleBrand() << ' '
+                  << vehicle.getVehicleModel() << " ["
+                  << vehicle.getVehicleRegNum() << ", "
+                  << vehicle.getYearOfManufacture() << "]\n";
+
+        const RepairOrder* active = manager.findActiveRepairByRegNum(regNum);
+
+        if (active == nullptr) {
+            std::cout << "This vehicle has no active repair order.\n";
+            return;
+        }
+
+
+        handleOrderActions(active->getOrderId());
+    }catch (const std::exception& error) {
+        std::cerr << "Operation failed: " << error.what() << '\n';
     }
 }

@@ -86,6 +86,10 @@ vector<Customer> AutoWorkshopManager::findCustomersByName(const string &namePart
 
 }
 
+const Customer& AutoWorkshopManager::findCustomerById(int clientId ) const {
+    return customerRepo.findCustomerById(clientId);
+}
+
 void AutoWorkshopManager::addVehicle(const Vehicle &vehicle) {
 
     if (!customerRepo.customerExists(vehicle.getCustomerId())) {
@@ -116,6 +120,10 @@ vector<Vehicle> AutoWorkshopManager::getVehiclesByCustomerId(int customerId) con
 
 const Vehicle & AutoWorkshopManager::findVehicleByRegNum(const std::string &regNum) const {
     return vehicleRepo.findByRegNum(regNum);
+}
+
+const Vehicle& AutoWorkshopManager::findVehicleById(int vehicleId) const {
+    return vehicleRepo.findVehicleById(vehicleId);
 }
 
 void AutoWorkshopManager::startRepair(int orderId) {
@@ -209,4 +217,17 @@ double AutoWorkshopManager::calculateTurnover(const TimePoint &from, const TimeP
 
     return turnover;
 
+}
+
+const RepairOrder& AutoWorkshopManager::getOrderById(
+    int orderId
+) const {
+    return orderRepo.findOrderById(orderId);
+}
+
+RepairOrder& AutoWorkshopManager::getOrderById(int orderId) {
+    return const_cast<RepairOrder&>(
+        static_cast<const AutoWorkshopManager*>(this)
+            ->getOrderById(orderId)
+    );
 }

@@ -4,7 +4,38 @@
 
 #include "RepairOrder.h"
 
+namespace {
+    std::string toString(RepairStatus status) {
+        switch (status) {
+            case RepairStatus::Accepted: return "Accepted";
+            case RepairStatus::InProgress: return "In Progress";
+            case RepairStatus::Completed: return "Completed";
+            case RepairStatus::Paid: return "Paid";
+            default: return "Unknown";
+        }
+    }
+    using TimePoint = std::chrono::system_clock::time_point;
+    std::string formatDate(const std::optional<TimePoint>& date) {
+        if (!date.has_value()) {
+            return "-";
+        }
 
+        const std::time_t rawTime =
+            std::chrono::system_clock::to_time_t(*date);
+
+        const std::tm* localTime = std::localtime(&rawTime);
+
+        if (localTime == nullptr) {
+            return "-";
+        }
+
+        const std::tm calendarDate = *localTime;
+
+        std::ostringstream result;
+        result << std::put_time(&calendarDate, "%Y-%m-%d");
+        return result.str();
+    }
+}
 
 RepairOrder::RepairOrder() {
     this->orderId = 0;
@@ -179,4 +210,51 @@ void RepairOrder::ensureEditable() const {
     if (repairStatus != RepairStatus::Accepted && repairStatus != RepairStatus::InProgress) {
         throw std::logic_error("Complete or paid orders cannot be modified!");
     }
+}
+
+std::ostream & operator<<(std::ostream &out, const RepairOrder &order) {
+    out << "================ REPAIR ORDER CARD ================\n"
+       << "Order ID:           " << order.orderId << '\n'
+       << "Customer ID:        " << order.customerId << '\n'
+       << "Vehicle ID:         " << order.vehicleId << '\n'
+       << "Status:             " << toString(order.repairStatus) << '\n'
+       << "Customer statement: " << order.customerStatement << '\n'
+       << "Accepted on:        " << formatDate(order.acceptedDate) << '\n';
+
+    if (order.completedDate.has_value()) {
+        out << "Completed on:       "
+            << formatDate(order.completedDate.value()) << '\n';
+    }
+    if (order.paidDate.has_value()) {
+        out << "Paid on:            "
+            << formatDate(order.paidDate.value()) << '\n';
+    }
+
+    out << "\n------------- Agreed services -------------\n";
+    if (order.repairServices.empty()) {
+        out << "No services registered yet.\n";
+    } else {
+        for (const RepairService& service : order.repairServices) {
+            out << "- " << service << '\n';
+        }
+    }
+
+    out << "\n-------------- Installed parts -------------\n";
+    if (order.parts.empty()) {
+        out << "No parts registered yet.\n";
+    } else {
+        for (const Part& part : order.parts) {
+            out << "- " << part.getPartName()
+                << " (" << part.getPartNumber() << "): "
+                << part.getQuantity() << " x " << part.getUnitPrice()
+                << " = " << part.getQuantity() * part.getUnitPrice() << '\n';
+        }
+    }
+
+    if (order.repairStatus == RepairStatus::Completed
+        || order.repairStatus == RepairStatus::Paid) {
+        out << "\nTotal due:          " << order.calculateTotalCost() << '\n';
+        }
+
+    return out;
 }
