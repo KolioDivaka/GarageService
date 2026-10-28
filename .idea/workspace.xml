@@ -33,14 +33,16 @@
   <component name="ChangeListManager">
     <list default="true" id="e40acb6c-1601-4e53-8dc2-47572b8dfac9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Models/RepairOrder.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairOrder.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/RepairOrder.h" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairOrder.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/RepairService.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairService.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/RepairService.h" beforeDir="false" afterPath="$PROJECT_DIR$/Models/RepairService.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Repositories/RepairOrderRepository.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Repositories/RepairOrderRepository.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Repositories/RepairOrderRepository.h" beforeDir="false" afterPath="$PROJECT_DIR$/Repositories/RepairOrderRepository.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/AutoWorkshopManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Services/AutoWorkshopManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/AutoWorkshopManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Services/AutoWorkshopManager.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/ClientHandler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Services/ClientHandler.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/ClientHandler.h" beforeDir="false" afterPath="$PROJECT_DIR$/Services/ClientHandler.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/FileManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Services/FileManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,17 +157,6 @@
     <isAutomaticFoundErrors value="true" />
     <isAutomaticReloadCMake value="true" />
     <isAutomaticBootstrapAfterUpdate value="false" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Services/FileManager.cpp</url>
-          <line>11</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

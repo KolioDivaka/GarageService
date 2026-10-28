@@ -4,12 +4,18 @@
 
 #include "ClientHandler.h"
 
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
+#include <string>
 #include "../Models/RepairBill.h"
 namespace {
+
     class InputClosed final : public std::exception {
-        public:
+    public:
         const char* what() const noexcept override {
             return "Console input is closed.";
         }
@@ -24,6 +30,117 @@ namespace {
             default: return "Unknown";
         }
     }
+
+    std::string formatDate(const std::optional<TimePoint>& date) {
+        if (!date.has_value()) {
+            return "-";
+        }
+
+        const std::time_t rawTime =
+            std::chrono::system_clock::to_time_t(*date);
+
+        const std::tm* localTime = std::localtime(&rawTime);
+
+        if (localTime == nullptr) {
+            return "-";
+        }
+
+        const std::tm calendarDate = *localTime;
+
+        std::ostringstream result;
+        result << std::put_time(&calendarDate, "%Y-%m-%d");
+        return result.str();
+    }
+
+     std::tm parseCalendarDate(const std::string& text) {
+        // Изискваме точно DD.MM.YYYY.
+        if (text.size() != 10
+            || text[2] != '.'
+            || text[5] != '.') {
+            throw std::invalid_argument(
+                "Invalid date format. Use DD.MM.YYYY."
+            );
+        }
+
+        for (std::size_t i = 0; i < text.size(); ++i) {
+            if (i == 2 || i == 5) {
+                continue;
+            }
+
+            if (text[i] < '0' || text[i] > '9') {
+                throw std::invalid_argument(
+                    "The date must contain digits and dots only."
+                );
+            }
+        }
+
+        int day = 0;
+        int month = 0;
+        int year = 0;
+        char firstDot = '\0';
+        char secondDot = '\0';
+
+        std::istringstream stream(text);
+
+        if (!(stream >> day >> firstDot
+                     >> month >> secondDot >> year)) {
+            throw std::invalid_argument("Cannot read the date.");
+        }
+
+        if (year < 1900
+            || month < 1 || month > 12
+            || day < 1 || day > 31) {
+            throw std::invalid_argument("Invalid calendar date.");
+        }
+
+        std::tm calendarDate{};
+        calendarDate.tm_mday = day;
+        calendarDate.tm_mon = month - 1;
+        calendarDate.tm_year = year - 1900;
+        calendarDate.tm_isdst = -1;
+
+        const std::time_t timestamp = std::mktime(&calendarDate);
+
+        if (timestamp == static_cast<std::time_t>(-1)) {
+            throw std::invalid_argument(
+                "Date is outside the supported range."
+            );
+        }
+
+        // mktime може да премести невалидна дата
+        // в следващ месец — отхвърляме такава промяна.
+        if (calendarDate.tm_mday != day
+            || calendarDate.tm_mon != month - 1
+            || calendarDate.tm_year != year - 1900) {
+            throw std::invalid_argument(
+                "This calendar date does not exist."
+            );
+        }
+
+        return calendarDate;
+    }
+
+    std::chrono::system_clock::time_point toTimePoint(
+        std::tm date,
+        bool nextDay = false
+    ) {
+        if (nextDay) {
+            ++date.tm_mday;
+        }
+
+        date.tm_isdst = -1;
+
+        const std::time_t timestamp = std::mktime(&date);
+
+        if (timestamp == static_cast<std::time_t>(-1)) {
+            throw std::invalid_argument(
+                "Date is outside the supported range."
+            );
+        }
+
+        return std::chrono::system_clock::from_time_t(timestamp);
+    }
+
 }
 
 string ClientHandler::readLine(const string &prompt) {
@@ -404,7 +521,7 @@ void ClientHandler::handleOrderActions(int orderId) {
         const RepairOrder& order = manager.getOrderById(orderId);
 
         std::cout << "\n=== ORDER #" << orderId
-                  << " — " << toString(order.getStatus()) << " ===\n"
+                  << " | " << toString(order.getStatus()) << " ===\n"
                   << "1. Show service card\n";
 
         switch (order.getStatus()) {
@@ -502,5 +619,154 @@ void ClientHandler::handleFindByRegNum() {
         handleOrderActions(active->getOrderId());
     }catch (const std::exception& error) {
         std::cerr << "Operation failed: " << error.what() << '\n';
+    }
+}
+
+void ClientHandler::handleUnfinishedRepairs() {
+    const vector<RepairOrder> unfinished = manager.listUnfinishedRepairs();
+
+    if (unfinished.empty()) {
+        cout<< "\nNo unfinished repairs found.\n";
+        return;
+    }
+
+    cout<< "\n=========== UNFINISHED REPAIRS ===========\n";
+
+    for (const RepairOrder order : unfinished) {
+        const Vehicle& vehicle = manager.findVehicleById(order.getVehicleId());
+
+        cout << "  [" << order.getOrderId() << "] "
+                  << vehicle.getVehicleRegNum() << " | "
+                  << vehicle.getVehicleBrand() << ' '
+                  << vehicle.getVehicleModel()
+                  << " | " << toString(order.getStatus())
+                  << " | accepted: " << formatDate(order.getAcceptedDate())
+                  << '\n';
+    }
+
+    cout<< "\nEnter order ID to work on it, or 0 to go back.\n";
+    const int choiceId = readInt("Chose: ");
+
+    if (choiceId == 0) {
+        return;
+    }
+
+    bool found = false;
+    for (const RepairOrder order : unfinished) {
+        if (order.getOrderId() == choiceId) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        cout<< "No unfinished repair with ID "<< choiceId<<endl;
+        return;
+    }
+
+    handleOrderActions(choiceId);
+}
+
+void ClientHandler::handleTurnover() {
+    cout << "\n=========== TURNOVER FOR PERIOD ===========\n";
+
+    const string fromText = readLine("From date (DD.MM.YYYY): ");
+
+    const string toText = readLine("To date (DD.MM.YYYY): ");
+
+    try {
+        const tm fromDate = parseCalendarDate(fromText);
+        const tm toDate = parseCalendarDate(toText);
+
+        const auto from = toTimePoint(fromDate);
+        const auto lastDay = toTimePoint(toDate);
+
+        if (from> lastDay) {
+            cout<< "The start date cannot be after the end date."<< endl;
+            return;
+        }
+
+        const auto toExclusive = toTimePoint(toDate,true);
+        const double turnover = manager.calculateTurnover(from, toExclusive);
+
+        const auto oldFlags = cout.flags();
+        const auto oldPrecision = cout.precision();
+
+        cout << "\nPeriod: " << fromText
+                  << " - " << toText
+                  << "\nTotal turnover: "
+                  << std::fixed << std::setprecision(2)
+                  << turnover << '\n';
+
+        cout.flags(oldFlags);
+        cout.precision(oldPrecision);
+    }catch (const std::exception& error) {
+        cerr << "Cannot generate report: "
+        << error.what() << '\n';
+    }
+}
+
+void ClientHandler::run() {
+
+    while (true) {
+        std::cout
+            << "\n"
+            << "========================================\n"
+            << "           AUTO WORKSHOP MENU           \n"
+            << "========================================\n"
+            << "1. Accept vehicle for repair\n"
+            << "2. Search by registration number\n"
+            << "3. Edit customer\n"
+            << "4. Edit vehicle\n"
+            << "5. List unfinished repairs\n"
+            << "6. Turnover for period\n"
+            << "0. Exit\n"
+            << "========================================\n";
+
+        try {
+            const int choice = readInt("Choose: ");
+
+            switch (choice) {
+                case 1:
+                    handleAcceptVehicle();
+                    break;
+
+                case 2:
+                    handleFindByRegNum();
+                    break;
+
+                case 3:
+                    handleEditCustomer();
+                    break;
+
+                case 4:
+                    handleEditVehicle();
+                    break;
+
+                case 5:
+                    handleUnfinishedRepairs();
+                    break;
+
+                case 6:
+                    handleTurnover();
+                    break;
+
+                case 0:
+                    std::cout << "Goodbye!\n";
+                    return;
+
+                default:
+                    std::cout
+                        << "Unknown option. Choose a number from 0 to 6.\n";
+                    break;
+            }
+        } catch (const std::exception& error) {
+            if (std::cin.eof() || std::cin.bad()) {
+                std::cerr << "\nInput closed. Exiting.\n";
+                return;
+            }
+
+            std::cerr << "\nOperation failed: "
+                      << error.what() << '\n';
+        }
     }
 }

@@ -5,6 +5,8 @@
 #ifndef GARAGESERVICE_REPAIRORDERREPOSITORY_H
 #define GARAGESERVICE_REPAIRORDERREPOSITORY_H
 #include <vector>
+
+#include "../Services/AutoWorkshopManager.h"
 class RepairOrder;
 using namespace std;
 
@@ -31,6 +33,8 @@ public:
     const vector<RepairOrder>& getRepairOrders() const;
     void setRepairOrders(const vector<RepairOrder>& orders);
     int getNextRepairOrderId() const;
+
+
 };
 
 

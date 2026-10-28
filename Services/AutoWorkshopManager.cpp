@@ -199,30 +199,49 @@ vector<RepairOrder> AutoWorkshopManager::getRepairHistoryByRegNum(const string &
 }
 
 double AutoWorkshopManager::calculateTurnover(const TimePoint &from, const TimePoint &to) const {
-    if (from > to) {
-        throw invalid_argument("Start date cannot be greater than end date!");
+
+    if (from >= to) {
+        throw std::invalid_argument(
+            "Start date must be before end date!"
+        );
     }
+
     double turnover = 0.0;
+
     for (const RepairOrder& order : orderRepo.getRepairOrders()) {
-        if (order.getStatus() == RepairStatus::Paid) {
-            const auto paidDate = order.getPaidDate();
-            if (!paidDate.has_value()) {
-                throw logic_error("Paid repair has no payment date " + to_string(order.getOrderId()));
-            }
-            if (*paidDate >= from && *paidDate <= to) {
-                turnover += order.calculateTotalCost();
-            }
+        if (order.getStatus() != RepairStatus::Paid) {
+            continue;
+        }
+
+        const auto paidDate = order.getPaidDate();
+
+        if (!paidDate.has_value()) {
+            throw std::logic_error(
+                "Paid repair has no payment date: "
+                + std::to_string(order.getOrderId())
+            );
+        }
+
+        if (*paidDate >= from && *paidDate < to) {
+            turnover += order.calculateTotalCost();
         }
     }
 
     return turnover;
-
 }
 
 const RepairOrder& AutoWorkshopManager::getOrderById(
     int orderId
 ) const {
     return orderRepo.findOrderById(orderId);
+}
+
+vector<RepairOrder> AutoWorkshopManager::listUnfinishedRepairs() const {
+    return orderRepo.getUnfinishedRepairs();
+}
+
+int AutoWorkshopManager::getRepairsNextId() const {
+    return orderRepo.getNextRepairOrderId();
 }
 
 RepairOrder& AutoWorkshopManager::getOrderById(int orderId) {

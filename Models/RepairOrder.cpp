@@ -55,6 +55,7 @@ RepairOrder::RepairOrder(int orderId, int customerId, int vehicleId, const std::
     setCustomerId(customerId);
     setVehicleId(vehicleId);
     setCustomerStatement(customerStatement);
+    acceptedDate = std::chrono::system_clock::now();
 }
 
 RepairOrder::RepairOrder(int orderId, int customerId, int vehicleId, const std::string &customerStatement,
@@ -235,7 +236,7 @@ std::ostream & operator<<(std::ostream &out, const RepairOrder &order) {
         out << "No services registered yet.\n";
     } else {
         for (const RepairService& service : order.repairServices) {
-            out << "- " << service << '\n';
+            out << "| " << service << '\n';
         }
     }
 

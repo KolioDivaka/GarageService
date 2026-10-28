@@ -7,7 +7,7 @@
 #include "AutoWorkshopManager.h"
 
 using namespace std;
-
+using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
 class ClientHandler {
 private:
@@ -40,9 +40,12 @@ private:
     void handleAcceptVehicle();
     void handleOrderActions(int orderId);
     void handleFindByRegNum();
+    void handleUnfinishedRepairs();
+    void handleTurnover();
 public:
     ClientHandler(AutoWorkshopManager& manager):manager(manager) {};
 
+    void run();
 
 };
 

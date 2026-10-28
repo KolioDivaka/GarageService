@@ -22,6 +22,9 @@ void RepairOrderRepository::updateNextId() {
     nextRepairOrderId = maxRepairOrderId + 1;
 }
 
+RepairOrderRepository::RepairOrderRepository(const vector<RepairOrder> &initialOrders) {
+}
+
 void RepairOrderRepository::addOrder(const RepairOrder& order) {
     for (const auto& existingOrder : repairOrders) {
         if (existingOrder.getOrderId() == order.getOrderId()) {
@@ -73,7 +76,7 @@ vector<RepairOrder> RepairOrderRepository::getUnfinishedRepairs() const {
     return unfinishedRepairs;
 }
 
-const vector<RepairOrder> & RepairOrderRepository::getRepairOrders() const {
+const vector<RepairOrder> &RepairOrderRepository::getRepairOrders() const {
     return repairOrders;
 }
 

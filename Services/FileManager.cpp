@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <unordered_set>
 using namespace std;
 
@@ -60,10 +61,12 @@ std::vector<Customer> FileManager::loadCustomers() const { // NOLINT(*-convert-m
             throw std::runtime_error("Invalid customer record at line"+ std::to_string(lineNum));
         }
 
-        if (usedIds.insert(customerId).second) {
-            throw std::runtime_error("Duplicate customer record at line"+ std::to_string(lineNum));
+        if (!usedIds.insert(customerId).second) {
+            throw std::runtime_error(
+                "Duplicate customer record at line "
+                + std::to_string(lineNum)
+            );
         }
-
         try {
             loadedCustomers.emplace_back(customerId, name, phoneNumber);
         }catch (const std::logic_error& e) {
@@ -71,9 +74,11 @@ std::vector<Customer> FileManager::loadCustomers() const { // NOLINT(*-convert-m
         }
     }
     if (file.bad() || (file.fail() && file.eof())) {
-        throw std::runtime_error("Error loading customer records from file " + std::to_string(*CUSTOMERS_FILE));
+        throw std::runtime_error(
+            "Error loading customer records from file "
+            + std::to_string(*CUSTOMERS_FILE)
+        );
     }
-
     return loadedCustomers;
 }
 
@@ -379,7 +384,9 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const { // NOLINT(*-con
 
 void FileManager::saveCustomers(const std::vector<Customer> &customers) const { // NOLINT(*-convert-member-functions-to-static)
     const filesystem::path targetPath = CUSTOMERS_FILE;
-
+    std::cout << "Saving customers to: "
+              << filesystem::absolute(targetPath).string()
+              << '\n';
     filesystem::path tempPath = targetPath;
     tempPath+= ".tmp";
 
@@ -538,6 +545,7 @@ void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const { //
 
 
 
+
 namespace {
     using TimePoint = std::chrono::system_clock::time_point;
 
@@ -585,29 +593,12 @@ namespace {
             return "-";
         }
 
-        const std::time_t rawTime =
-            std::chrono::system_clock::to_time_t(*date);
+        const auto seconds =
+            std::chrono::duration_cast<std::chrono::seconds>(
+                date->time_since_epoch()
+            ).count();
 
-        const std::tm* localTime = std::localtime(&rawTime);
-
-        if (localTime == nullptr) {
-            throw std::runtime_error(
-                "Cannot convert saved date!"
-            );
-        }
-
-        const std::tm calendarDate = *localTime;
-
-        std::ostringstream result;
-        result << std::put_time(&calendarDate, "%Y-%m-%d");
-
-        if (!result) {
-            throw std::runtime_error(
-                "Cannot format saved date!"
-            );
-        }
-
-        return result.str();
+        return std::to_string(seconds);
     }
 
 }

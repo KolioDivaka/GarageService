@@ -13,8 +13,8 @@
 #include "../Repositories/RepairOrderRepository.h"
 
 
-
 class RepairOrderRepository;
+class CustomerRepository;
 class VehicleRepository;
 using TimePoint = std::chrono::system_clock::time_point;
 using namespace std;
@@ -62,7 +62,7 @@ public:
     double calculateTurnover(const TimePoint& from, const TimePoint& to) const;
     RepairOrder& getOrderById(int orderId);
     const RepairOrder& getOrderById(int orderId) const;
-
+    [[nodiscard]] vector<RepairOrder > listUnfinishedRepairs() const;
 
     int getCustomersNextId() {
         return customerRepo.getNextCustomerId();
@@ -70,9 +70,8 @@ public:
     int getVehiclesNextId() {
         return vehicleRepo.getVehicleNextId();
     }
-    int getRepairsNextId() {
-        return orderRepo.getNextRepairOrderId();
-    }
+    int getRepairsNextId() const;
+
 
 };
 
