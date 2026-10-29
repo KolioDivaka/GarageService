@@ -5,15 +5,7 @@
 #include "RepairOrder.h"
 
 namespace {
-    std::string toString(RepairStatus status) {
-        switch (status) {
-            case RepairStatus::Accepted: return "Accepted";
-            case RepairStatus::InProgress: return "In Progress";
-            case RepairStatus::Completed: return "Completed";
-            case RepairStatus::Paid: return "Paid";
-            default: return "Unknown";
-        }
-    }
+
     using TimePoint = std::chrono::system_clock::time_point;
     std::string formatDate(const std::optional<TimePoint>& date) {
         if (!date.has_value()) {

@@ -31,5 +31,15 @@ add_executable(GarageService main.cpp
         Services/ClientHandler.h
         Models/RepairBill.cpp
         Models/RepairBill.h
+        Utility/ConsoleInput.cpp
+        Utility/ConsoleInput.h
+        Utility/DateUtils.cpp
+        Utility/DateUtils.h
+        ConsoleUI/CustomerUIHandler.cpp
+        ConsoleUI/CustomerUIHandler.h
+        ConsoleUI/VehicleUIHandler.cpp
+        ConsoleUI/VehicleUIHandler.h
+        ConsoleUI/RepairOrderUIHandler.cpp
+        ConsoleUI/RepairOrderUIHandler.h
 
 )

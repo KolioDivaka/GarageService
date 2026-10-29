@@ -12,6 +12,15 @@ enum class RepairStatus {
     Completed,
     Paid    
 };
+inline std::string toString(RepairStatus status) {
+    switch (status) {
+        case RepairStatus::Accepted: return "Accepted";
+        case RepairStatus::InProgress: return "In Progress";
+        case RepairStatus::Completed: return "Completed";
+        case RepairStatus::Paid: return "Paid";
+        default: return "Unknown";
+    }
+}
 
 
 #endif //GARAGESERVICE_REPAIRSTATUS_H
