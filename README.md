@@ -1,68 +1,68 @@
 # GarageService
 
-Конзолно приложение на C++ за управление на автосервиз — клиенти, автомобили, сервизни поръчки и справки.
+A C++ console application for auto workshop management — handling customers, vehicles, service repair orders, and financial reports.
 
-## Функционалности
+## Features
 
-- Добавяне и редактиране на клиенти и автомобили.
-- Приемане на автомобил за ремонт и създаване на сервизна поръчка.
-- Търсене по регистрационен номер с достъп до действията по ремонта.
-- Добавяне на извършени услуги и използвани части.
-- Приключване на ремонт, извеждане на сметка и регистриране на плащане.
-- Списък с незавършени ремонти и избор на поръчка за работа.
-- Справка за оборота за избран период.
-- Запис и зареждане на данни чрез текстови файлове.
+- Add and edit customers and vehicles.
+- Accept a vehicle for repair and create a service repair order.
+- Search by registration number with direct access to repair actions.
+- Add performed services and spare parts used during repairs.
+- Complete repairs, generate bills, and register payments.
+- List unfinished repairs and select an order to proceed.
+- Calculate total turnover for a selected period.
+- Persistent storage and data loading using text files.
 
-## Жизнен цикъл на поръчката
+## Order Lifecycle
 
-При нормалния работен поток поръчката преминава през следните състояния:
+During the standard workflow, a repair order transitions through the following states:
 
 `Accepted → InProgress → Completed → Paid`
 
-Незавършените ремонти са поръчките със статус `Accepted` или `InProgress`.
+Unfinished repairs consist of orders with either the `Accepted` or `InProgress` status.
 
-Оборотът се изчислява от платените поръчки според датата на плащане. Периодът се въвежда във формат `DD.MM.YYYY`, като се включва и крайната дата.
+Turnover is calculated from paid orders based on their payment date. The period is entered in `DD.MM.YYYY` format and is inclusive of the end date.
 
-## Структура
+## Project Structure
 
-- `Models/` — клиенти, автомобили, поръчки, услуги, части и сметки.
-- `Repositories/` — съхранение в паметта и търсене на обекти.
-- `Services/` — бизнес логика, конзолно меню и работа с файлове.
-- `main.cpp` — създаване на зависимостите и стартиране на приложението.
+- `Models/` — core domain objects: customers, vehicles, repair orders, services, parts, and bills.
+- `Repositories/` — in-memory data storage and lookup mechanisms.
+- `ConsoleUI/` — modular user interface handlers separated by domain (Customer, Vehicle, Repair Order).
+- `Services/` — business logic layer (`AutoWorkshopManager`), data loaders, and file I/O operations (`FileManager`).
+- `Utility/` — helper utilities for console input validation and date/time manipulation.
+- `main.cpp` — dependency injection and application entry point.
 
-## Компилиране
+## Compilation
 
-Необходими са CMake и компилатор с поддръжка на C++17 или по-нова версия.
+Requires CMake and a compiler supporting **C++17** or newer.
 
-От основната директория на проекта:
+From the root directory of the project:
 
     cmake -S . -B build
     cmake --build build
 
-Стартирайте генерирания изпълним файл или използвайте Run конфигурацията в CLion.
+Run the generated executable or use the Run configuration in CLion.
 
-## Работа с приложението
+## Usage
 
-Главното меню предоставя следните команди:
+The main menu provides the following commands:
 
-1. Приемане на автомобил за ремонт.
-2. Търсене по регистрационен номер.
-3. Редактиране на клиент.
-4. Редактиране на автомобил.
-5. Незавършени ремонти.
-6. Оборот за период.
-0. Изход.
+1. Accept vehicle for repair.
+2. Search by registration number.
+3. Edit customer.
+4. Edit vehicle.
+5. List unfinished repairs.
+6. Calculate turnover for a period.
+0. Exit.
 
-След намиране или избор на поръчка се отваря подменю с действия според текущия ѝ статус.
+Selecting or finding an active repair order opens a dynamic submenu tailored to the order's current status.
 
-## Данни
+## Data Persistence
 
-`FileManager` съдържа методите за запис и зареждане на клиенти, автомобили и поръчки. Променящите операции в мениджъра извикват съответния метод за запис.
+`FileManager` handles saving and loading customers, vehicles, and repair orders using atomic file operations (via temporary files). Modifying operations within the manager automatically trigger data persistence.
 
-Пътищата се определят от `CUSTOMERS_FILE`, `VEHICLES_FILE` и `REPAIR_ORDERS_FILE`. Относителните пътища се разрешават спрямо работната директория на приложението.
+File paths (`CUSTOMERS_FILE`, `VEHICLES_FILE`, `REPAIR_ORDERS_FILE`) are resolved relative to the application's working directory.
 
-За запазване на данните между стартиранията съществуващите записи трябва да бъдат заредени в repository-тата преди работа с менюто.
-
-## Автор
+## Author
 
 Kolio
