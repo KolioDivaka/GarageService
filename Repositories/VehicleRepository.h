@@ -11,16 +11,6 @@
 class Vehicle;
 using namespace std;
 class VehicleRepository {
-public:
-   [[nodiscard]] vector<Vehicle> getVehicles() const {
-      return vehicles;
-   }
-
-   [[nodiscard]] int getVehicleNextId() const {
-      return nextVehicleId;
-   }
-
-
 
 private:
    vector<Vehicle> vehicles;
@@ -32,6 +22,17 @@ public:
    void addVehicle( const Vehicle &vehicle );
    void editVehicle( int vehicleId, const string& brand, const string& model, const string& regNumber, optional<int> yearOfManufacture = std::nullopt );
    const Vehicle& findByRegNum(const std::string& regNum) const;
+    [[nodiscard]] vector<Vehicle> getVehicles() const {
+         return vehicles;
+      }
+
+      [[nodiscard]] int getVehicleNextId() const {
+         return nextVehicleId;
+      }
+   void setVehicles( const vector<Vehicle>& loadedVehicles ) {
+       this->vehicles = loadedVehicles;
+       updateNextVehicleId();
+    }
 
 private:
    void updateNextVehicleId();

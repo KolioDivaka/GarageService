@@ -73,7 +73,7 @@ std::vector<Customer> FileManager::loadCustomers() const { // NOLINT(*-convert-m
             throw std::runtime_error("Invalid customer at line "+ std::to_string(lineNum)+ ": "+e.what());
         }
     }
-    if (file.bad() || (file.fail() && file.eof())) {
+    if (file.bad()) {
         throw std::runtime_error(
             "Error loading customer records from file "
             + std::to_string(*CUSTOMERS_FILE)
@@ -182,7 +182,7 @@ std::vector<Vehicle> FileManager::loadVehicles() const { // NOLINT(*-convert-mem
             );
         }
     }
-    if (file.bad() || (file.fail() && !file.eof())) {
+    if (file.bad() ) {
         throw std::runtime_error(
             std::string("Error while reading file: ") + VEHICLES_FILE
         );

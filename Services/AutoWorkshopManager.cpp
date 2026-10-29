@@ -240,6 +240,14 @@ vector<RepairOrder> AutoWorkshopManager::listUnfinishedRepairs() const {
     return orderRepo.getUnfinishedRepairs();
 }
 
+int AutoWorkshopManager::getCustomersNextId() {
+    return customerRepo.getNextCustomerId();
+}
+
+int AutoWorkshopManager::getVehiclesNextId() {
+    return vehicleRepo.getVehicleNextId();
+}
+
 int AutoWorkshopManager::getRepairsNextId() const {
     return orderRepo.getNextRepairOrderId();
 }

@@ -21,6 +21,7 @@ private:
 
 
 public:
+    FileManager() = default;
     [[nodiscard]] std::vector<Customer> loadCustomers() const;
     [[nodiscard]] std::vector<Vehicle> loadVehicles() const;
     [[nodiscard]] std::vector<RepairOrder> loadRepairOrders() const;

@@ -37,8 +37,8 @@ public:
         return nextCustomerId;
     }
 
-    void setCustomers( const vector<Customer>& customers ) {
-       this->customers = customers;
+    void setCustomers( const vector<Customer>& loadedCustomers ) {
+       this->customers = loadedCustomers;
         updateNextCustomerId();
     }
 private:
