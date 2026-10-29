@@ -30,6 +30,10 @@ public:
     const RepairOrder& getOrder() const noexcept;
     const Customer& getCustomer() const noexcept;
     const Vehicle& getVehicle() const noexcept;
+
+    void setOrder(const RepairOrder& newOrder) noexcept;
+    void setCustomer(const Customer& newCustomer) noexcept;
+    void setVehicle(const Vehicle& newVehicle) noexcept;
 };
 
 std::ostream& operator<<(std::ostream& os, const RepairBill& bill);

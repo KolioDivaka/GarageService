@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_set>
 
+#include "ClientHandler.h"
+#include "DataLoader.h"
 #include "../Repositories/CustomerRepository.h"
 #include "../Repositories/VehicleRepository.h"
 #include "../Repositories/RepairOrderRepository.h"
@@ -28,6 +30,25 @@ namespace {
         return result;
     }
 }
+
+AutoWorkshopManager::AutoWorkshopManager(FileManager& fileManager,
+                                    CustomerRepository& customerRepository,
+                                    VehicleRepository& vehicleRepository,
+                                    RepairOrderRepository& repairOrderRepository)
+    : fileManager(fileManager),
+      customerRepo(customerRepository),
+      vehicleRepo(vehicleRepository),
+      orderRepo(repairOrderRepository) {
+
+    DataLoader dataLoader(fileManager);
+    dataLoader.loadIntoRepositories(customerRepo, vehicleRepo, orderRepo);
+}
+
+AutoWorkshopManager::AutoWorkshopManager(FileManager& fileManager)
+    : fileManager(fileManager),
+      customerRepo(*(new CustomerRepository())),
+      vehicleRepo(*(new VehicleRepository())),
+      orderRepo(*(new RepairOrderRepository())) {}
 
 void AutoWorkshopManager::addCustomer(const Customer &customer) {
     customerRepo.addCustomer(customer);

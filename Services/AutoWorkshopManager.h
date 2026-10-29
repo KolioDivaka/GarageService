@@ -5,17 +5,19 @@
 #include <vector>
 #include <string>
 #include <optional>
+
 #include "FileManager.h"
-#include "../Repositories/CustomerRepository.h"
-#include "../Repositories/VehicleRepository.h"
-#include "../Repositories/RepairOrderRepository.h"
-// Forward declarations за избягване на кръгови зависимости
-class FileManager;
+#include "../Models/Customer.h"
+#include "../Models/Vehicle.h"
+#include "../Models/RepairOrder.h"
+#include "../Models/RepairService.h"
+#include "../Models/Part.h"
+
+
+// Forward declarations за репозиторитата, за да избегнем кръгови зависимости
 class CustomerRepository;
 class VehicleRepository;
 class RepairOrderRepository;
-
-using TimePoint = std::chrono::system_clock::time_point;
 
 class AutoWorkshopManager {
 private:
@@ -25,20 +27,11 @@ private:
     RepairOrderRepository& orderRepo;
 
 public:
-
     AutoWorkshopManager(FileManager& fileManager,
                         CustomerRepository& customerRepository,
                         VehicleRepository& vehicleRepository,
-                        RepairOrderRepository& repairOrderRepository):
-    fileManager(fileManager),
-    customerRepo(customerRepository),
-    vehicleRepo(vehicleRepository),
-    orderRepo(repairOrderRepository) {
-        customerRepo.setCustomers(fileManager.loadCustomers());
-        vehicleRepo.setVehicles(fileManager.loadVehicles());
-        orderRepo.setRepairOrders(fileManager.loadRepairOrders());
-    }
-
+                        RepairOrderRepository& repairOrderRepository);
+    explicit AutoWorkshopManager(FileManager& fileManager);
     // Customer Methods
     void addCustomer(const Customer& customer);
     void editCustomer(int customerId, const std::string& name, const std::string& phoneNumber);
@@ -60,10 +53,10 @@ public:
     void addRepairService(int orderId, const RepairService& service);
     void addParts(int orderId, const Part& part);
 
-    // Spravki i tursene
+    // Searches & Reports
     const RepairOrder* findActiveRepairByRegNum(const std::string& regNum) const;
     std::vector<RepairOrder> getRepairHistoryByRegNum(const std::string& regNum) const;
-    double calculateTurnover(const TimePoint& from, const TimePoint& to) const;
+    double calculateTurnover(const std::chrono::system_clock::time_point& from, const std::chrono::system_clock::time_point& to) const;
     RepairOrder& getOrderById(int orderId);
     const RepairOrder& getOrderById(int orderId) const;
     [[nodiscard]] std::vector<RepairOrder> listUnfinishedRepairs() const;

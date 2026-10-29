@@ -14,7 +14,7 @@
 
 class RepairOrder {
 private:
-    //Id's of the order, customer and vehicle
+
     int orderId{};
     int customerId{};
     int vehicleId{};
@@ -34,7 +34,7 @@ private:
     std::optional<TimePoint> completedDate;
     std::optional<TimePoint> paidDate;
 
-    //
+
     void validateState() const;
     void ensureEditable() const;
 

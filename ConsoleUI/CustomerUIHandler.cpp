@@ -93,14 +93,15 @@ int CustomerUIHandler::pickCustomerId(const std::vector<Customer> &matches) cons
                   << " (" << matches[i].getPhoneNumber() << ")\n";
     }
 
-    const int choice = ConsoleInput::readPositiveInt("Choose [1-" +
+
+    const int choice = ConsoleInput::readInt("Choose [1-" +
         std::to_string(matches.size()) + "] or 0 to cancel: ");
 
     if (choice == 0) {
         return 0;
     }
 
-    if (static_cast<std::size_t>(choice) > matches.size()) {
+    if (choice < 0 || static_cast<std::size_t>(choice) > matches.size()) {
         std::cout << "Invalid choice.\n";
         return 0;
     }

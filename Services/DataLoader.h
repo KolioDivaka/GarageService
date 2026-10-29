@@ -9,22 +9,31 @@
 #include "../Models/Customer.h"
 #include "../Models/Vehicle.h"
 #include "../Models/RepairOrder.h"
-
-class CustomerRepository;
-class VehicleRepository;
-class RepairOrderRepository;
+#include "../Repositories/CustomerRepository.h"
+#include "../Repositories/VehicleRepository.h"
+#include "../Repositories/RepairOrderRepository.h"
 using namespace std;
 class DataLoader {
 private:
-    FileManager& fileManager;
+    FileManager* fileManager;
 
     void validateData(const std::vector<Customer>& customers,
                       const std::vector<Vehicle>& vehicles,
                       const std::vector<RepairOrder>& repairOrders) const;
 
 public:
-    explicit DataLoader(FileManager& fm): fileManager(fm) {};
+    explicit DataLoader(FileManager& fm): fileManager(&fm) {};
 
+
+    [[nodiscard]] FileManager* getFileManager() const {
+        return fileManager;
+    }
+
+    void setFileManager(FileManager& fm) {
+        this->fileManager = &fm;
+    }
+    
+    DataLoader() : fileManager(nullptr) {}
     // Този метод чете, валидира и пълни репозиторитата
     void loadIntoRepositories(CustomerRepository &customerRepo,
                               VehicleRepository &vehicleRepo,

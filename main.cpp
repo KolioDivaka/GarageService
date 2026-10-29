@@ -4,7 +4,9 @@
 
 #include "Services/AutoWorkshopManager.h"
 #include "Services/ClientHandler.h"
-
+#include "Repositories/CustomerRepository.h"
+#include "Repositories/VehicleRepository.h"
+#include "Repositories/RepairOrderRepository.h"
 // TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 
 int main() {
@@ -15,6 +17,7 @@ int main() {
         VehicleRepository vehicleRepo;
         RepairOrderRepository orderRepo;
 
+        // Тук се извиква конструкторът, който през DataLoader ще зареди и валидира всичко
         AutoWorkshopManager manager(
             fileManager,
             customerRepo,
@@ -27,10 +30,7 @@ int main() {
 
         return 0;
     } catch (const std::exception& error) {
-        std::cerr << "Application error: "
-                  << error.what() << '\n';
-
+        std::cerr << "Application error: " << error.what() << '\n';
         return 1;
     }
-
 }

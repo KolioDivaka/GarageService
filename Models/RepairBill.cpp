@@ -3,9 +3,8 @@
 //
 
 #include "RepairBill.h"
-
 #include <iomanip>
-
+#include <ostream>
 #include "Part.h"
 #include "RepairService.h"
 #include "Vehicle.h"

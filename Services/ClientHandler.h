@@ -11,11 +11,20 @@ using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
 class ClientHandler {
 private:
-    AutoWorkshopManager& manager;
+    AutoWorkshopManager* manager;
 
 public:
-    ClientHandler(AutoWorkshopManager& manager):manager(manager) {};
+    ClientHandler(AutoWorkshopManager& manager):manager(&manager) {};
+    ClientHandler()
+            : manager(nullptr) {}
 
+    [[nodiscard]] AutoWorkshopManager* getManager() const {
+        return manager;
+    }
+
+    void setManager(AutoWorkshopManager& managerInstance) {
+        this->manager = &managerInstance;
+    }
     void run();
 
 };

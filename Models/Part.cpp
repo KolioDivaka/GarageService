@@ -50,4 +50,20 @@ void Part::setQuantity(int newQuantity) {
     this->quantity = newQuantity;
 }
 
+std::string Part::getPartName() const {
+    return this->partName;
+}
+
+std::string Part::getPartNumber() const {
+    return partName;
+}
+
+double Part::getUnitPrice() const {
+    return  unitPrice;
+}
+
+int Part::getQuantity() const {
+    return quantity;
+}
+
 

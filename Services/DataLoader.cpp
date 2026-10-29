@@ -3,7 +3,9 @@
 //
 
 #include "DataLoader.h"
-
+#include "../Repositories/CustomerRepository.h"
+#include "../Repositories/VehicleRepository.h"
+#include "../Repositories/RepairOrderRepository.h"
 #include <unordered_set>
 
 void DataLoader::validateData(const std::vector<Customer> &customers, const std::vector<Vehicle> &vehicles,
@@ -85,8 +87,17 @@ void DataLoader::validateData(const std::vector<Customer> &customers, const std:
 }
 
 void DataLoader::loadIntoRepositories(CustomerRepository &customerRepo, VehicleRepository &vehicleRepo,
-                                      RepairOrderRepository &orderRepo) {
-    vector<Customer> customers = fileManager.loadCustomers();
-    vector<Vehicle> vehicles = fileManager.loadVehicles();
-    vector<RepairOrder> repairOrders = fileManager.loadRepairOrders();
+                                    RepairOrderRepository &orderRepo) {
+
+    vector<Customer> customers = fileManager->loadCustomers();
+    vector<Vehicle> vehicles = fileManager->loadVehicles();
+    vector<RepairOrder> repairOrders = fileManager->loadRepairOrders();
+
+
+    validateData(customers, vehicles, repairOrders);
+
+
+    customerRepo.setCustomers(std::move(customers));
+    vehicleRepo.setVehicles(std::move(vehicles));
+    orderRepo.setRepairOrders(std::move(repairOrders));
 }

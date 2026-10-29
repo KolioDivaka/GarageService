@@ -11,9 +11,9 @@
 using namespace  ConsoleInput;
 
 void ClientHandler::run() {
-CustomerUIHandler customerUI(manager);
-    VehicleUIHandler vehicleUI(manager);
-    RepairOrderUIHandler orderUI(manager); // или RepairOrderUIHandler
+CustomerUIHandler customerUI(*manager);
+    VehicleUIHandler vehicleUI(*manager);
+    RepairOrderUIHandler orderUI(*manager); // или RepairOrderUIHandler
 
     while (true) {
         std::cout << "\n===== GARAGE SERVICE MENU =====\n"
