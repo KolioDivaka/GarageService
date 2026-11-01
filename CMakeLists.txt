@@ -42,4 +42,4 @@ add_executable(GarageService main.cpp
         ConsoleUI/RepairOrderUIHandler.cpp
         ConsoleUI/RepairOrderUIHandler.h
 
-)
+ "Utility/StringUtils.h" "Utility/StringUtils.cpp")

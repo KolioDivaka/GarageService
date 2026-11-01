@@ -4,11 +4,8 @@
 
 #ifndef GARAGESERVICE_REPAIRORDERREPOSITORY_H
 #define GARAGESERVICE_REPAIRORDERREPOSITORY_H
+#include "../Models/RepairOrder.h"
 #include <vector>
-
-
-
-class RepairOrder;
 
 using namespace std;
 

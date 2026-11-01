@@ -17,7 +17,6 @@ int main() {
         VehicleRepository vehicleRepo;
         RepairOrderRepository orderRepo;
 
-        // Тук се извиква конструкторът, който през DataLoader ще зареди и валидира всичко
         AutoWorkshopManager manager(
             fileManager,
             customerRepo,

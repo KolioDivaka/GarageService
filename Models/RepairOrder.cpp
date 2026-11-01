@@ -3,31 +3,8 @@
 //
 
 #include "RepairOrder.h"
-
-namespace {
-
-    using TimePoint = std::chrono::system_clock::time_point;
-    std::string formatDate(const std::optional<TimePoint>& date) {
-        if (!date.has_value()) {
-            return "-";
-        }
-
-        const std::time_t rawTime =
-            std::chrono::system_clock::to_time_t(*date);
-
-        const std::tm* localTime = std::localtime(&rawTime);
-
-        if (localTime == nullptr) {
-            return "-";
-        }
-
-        const std::tm calendarDate = *localTime;
-
-        std::ostringstream result;
-        result << std::put_time(&calendarDate, "%Y-%m-%d");
-        return result.str();
-    }
-}
+#include "../Utility/DateUtils.h"
+using namespace DateUtils;
 
 RepairOrder::RepairOrder() {
     this->orderId = 0;

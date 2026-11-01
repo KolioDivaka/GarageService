@@ -4,16 +4,11 @@
 
 #include "CustomerRepository.h"
 #include "../Models/Customer.h"
+#include "../Utility/StringUtils.h"
 #include <limits>
-
 #include <stdexcept>
 
-namespace{
-    bool isBlank(const string& text) {
-        return text.find_first_not_of(" \t\r\n\f\v") == string::npos;
-    }
-};
-
+using namespace StringUtils;
 
 CustomerRepository::CustomerRepository(const std::vector<Customer> &initialCustomers) {
     customers = initialCustomers;

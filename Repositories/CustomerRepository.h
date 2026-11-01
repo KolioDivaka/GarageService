@@ -4,12 +4,12 @@
 
 #ifndef GARAGESERVICE_CUSTOMERREPOSITORY_H
 #define GARAGESERVICE_CUSTOMERREPOSITORY_H
+#include "../Models/Customer.h"
+#include "../Services/FileManager.h"
 #include <string>
 #include <vector>
 
-#include "../Services/FileManager.h"
 
-class Customer;
 using namespace std;
 class CustomerRepository {
 

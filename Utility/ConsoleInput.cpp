@@ -11,7 +11,7 @@
 #include <string>
 
 namespace ConsoleInput {
-    std::string readLine(const std::string &prompt) {
+    std::string readLine(const std::string& prompt) {
         std::cout << prompt;
         std::string text;
 
@@ -21,7 +21,7 @@ namespace ConsoleInput {
         return text;
     }
 
-    int readInt(const std::string &prompt) {
+    int readInt(const std::string& prompt) {
         while (true) {
             const std::string text = readLine(prompt);
             std::istringstream input(text);
@@ -39,7 +39,7 @@ namespace ConsoleInput {
         }
     }
 
-    int readPositiveInt(const std::string &prompt) {
+    int readPositiveInt(const std::string& prompt) {
         while (true) {
             const int value = readInt(prompt);
             if (value > 0) {
@@ -49,7 +49,7 @@ namespace ConsoleInput {
         }
     }
 
-    std::optional<int> readOptionalInt(const std::string &prompt) {
+    std::optional<int> readOptionalInt(const std::string& prompt) {
         while (true) {
             const std::string text = readLine(prompt);
 
@@ -71,7 +71,7 @@ namespace ConsoleInput {
         }
     }
 
-    double readPositiveDouble(const std::string &prompt) {
+    double readPositiveDouble(const std::string& prompt) {
         while (true) {
             const std::string raw = readLine(prompt);
 
@@ -88,9 +88,11 @@ namespace ConsoleInput {
                 }
 
                 return value;
-            } catch (const std::exception&) {
+            }
+            catch (const std::exception&) {
                 std::cout << "Please enter a valid number (e.g. 12.50).\n";
             }
         }
     }
 }
+

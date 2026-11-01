@@ -4,12 +4,14 @@
 
 #ifndef GARAGESERVICE_VEHICLEREPOSITORY_H
 #define GARAGESERVICE_VEHICLEREPOSITORY_H
+#include "../Models/Vehicle.h"
 #include <optional>
 #include <string>
 #include <vector>
-#include "../Models/Vehicle.h"
-class Vehicle;
+
+
 using namespace std;
+
 class VehicleRepository {
 
 private:

@@ -4,14 +4,10 @@
 
 #include "VehicleRepository.h"
 #include "../Models/Vehicle.h"
+#include "../Utility/StringUtils.h"
 #include <limits>
 #include <stdexcept>
-
-namespace{
-    bool isBlank(const string& text) {
-        return text.find_first_not_of(" \t\r\n\f\v") == string::npos;
-    }
-};
+using namespace StringUtils;
 
 Vehicle & VehicleRepository::findVehicleById(int vehicleId) {
     Vehicle* vehicle = nullptr;

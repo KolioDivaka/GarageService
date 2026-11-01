@@ -6,12 +6,11 @@
 #define GARAGESERVICE_REPAIRBILL_H
 #include <chrono>
 #include <iosfwd>
+#include "Customer.h"
+#include "Vehicle.h"
+#include "RepairOrder.h"
 
-#include "../Services/AutoWorkshopManager.h"
 
-class Customer;
-class Vehicle;
-class RepairOrder;
 using namespace std;
 
 class RepairBill {

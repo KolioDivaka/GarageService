@@ -12,12 +12,9 @@
 #include "../Models/RepairOrder.h"
 #include "../Models/RepairService.h"
 #include "../Models/Part.h"
-
-
-// Forward declarations за репозиторитата, за да избегнем кръгови зависимости
-class CustomerRepository;
-class VehicleRepository;
-class RepairOrderRepository;
+#include "../Repositories/CustomerRepository.h"
+#include "../Repositories/VehicleRepository.h"
+#include "../Repositories/RepairOrderRepository.h"
 
 class AutoWorkshopManager {
 private:
