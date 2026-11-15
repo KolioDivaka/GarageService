@@ -25,6 +25,8 @@ Turnover is calculated from paid orders based on their payment date. The period 
 
 ## Project Structure
 
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/koliodivaka/garageservice?utm_source=readme&utm_medium=badge)
+
 - `Models/` — core domain objects: customers, vehicles, repair orders, services, parts, and bills.
 - `Repositories/` — in-memory data storage and lookup mechanisms.
 - `ConsoleUI/` — modular user interface handlers separated by domain (Customer, Vehicle, Repair Order).

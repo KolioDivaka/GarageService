@@ -8,8 +8,8 @@
 #include <stdexcept>
 
 namespace{
-    bool isBlank(const std::string& text) {
-        return text.find_first_not_of(" \t\r\n\f\v") == std::string::npos;
+    bool isBlank(const string& text) {
+        return text.find_first_not_of(" \t\r\n\f\v") == string::npos;
     }
 };
 
@@ -23,7 +23,7 @@ Vehicle & VehicleRepository::findVehicleById(int vehicleId) {
         }
     }
     if (!vehicle) {
-        throw std::invalid_argument("Cannot find vehicle with ID:"+ std::to_string(vehicleId));
+        throw invalid_argument("Cannot find vehicle with ID:"+to_string(vehicleId));
     }
 
     return *vehicle;
@@ -62,10 +62,8 @@ void VehicleRepository::addVehicle(const Vehicle &vehicle) {
 
 }
 
-void VehicleRepository::editVehicle(int vehicleId, const std::string &brand,
-    const std::string &model,
-    const std::string &regNumber,
-    std::optional<int> yearOfManufacture) {
+void VehicleRepository::editVehicle(int vehicleId, const string &brand, const string &model, const string &regNumber,
+    optional<int> yearOfManufacture) {
 
     Vehicle& vehicle = findVehicleById(vehicleId);
 
@@ -93,7 +91,7 @@ void VehicleRepository::editVehicle(int vehicleId, const std::string &brand,
             if (other.getVehicleId() != vehicleId
                 && other.getVehicleRegNum()
                     == updatedVehicle.getVehicleRegNum()) {
-                throw std::invalid_argument(
+                throw invalid_argument(
                     "Vehicle registration already exists: "
                     + updatedVehicle.getVehicleRegNum()
                 );
@@ -126,13 +124,13 @@ void VehicleRepository::updateNextVehicleId() {
     int maxVehicleId = 0;
 
     for (const Vehicle& v : vehicles) {
-        maxVehicleId = std::max(maxVehicleId,v.getVehicleId());
+        maxVehicleId = max(maxVehicleId,v.getVehicleId());
     }
 
     constexpr int maxInt = std::numeric_limits<int>::max();
 
     if (maxVehicleId == maxInt) {
-        throw std::overflow_error(
+        throw overflow_error(
             "Cannot generate repair order IDs: int limit reached!");
     }
 

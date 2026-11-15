@@ -21,6 +21,7 @@ namespace  ConsoleInput {
     int readPositiveInt(const std::string &prompt);
     std::optional<int> readOptionalInt(const std::string &prompt);
     double readPositiveDouble(const std::string &prompt);
+
 }
 
 
