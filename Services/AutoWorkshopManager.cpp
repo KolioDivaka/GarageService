@@ -8,33 +8,18 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_set>
-
 #include "ClientHandler.h"
 #include "DataLoader.h"
 #include "../Repositories/CustomerRepository.h"
 #include "../Repositories/VehicleRepository.h"
 #include "../Repositories/RepairOrderRepository.h"
+#include "../Utility/StringUtils.h"
 
-
-namespace {
-    string normalizeForSearch(const string& text) {
-        string result;
-        result.reserve(text.size());
-
-        for (const unsigned char ch : text) {
-            if (!isblank(ch)) {
-                result += static_cast<char>(tolower(ch));
-            }
-        }
-
-        return result;
-    }
-}
 
 AutoWorkshopManager::AutoWorkshopManager(FileManager& fileManager,
-                                    CustomerRepository& customerRepository,
-                                    VehicleRepository& vehicleRepository,
-                                    RepairOrderRepository& repairOrderRepository)
+                                         CustomerRepository& customerRepository,
+                                         VehicleRepository& vehicleRepository,
+                                         RepairOrderRepository& repairOrderRepository)
     : fileManager(fileManager),
       customerRepo(customerRepository),
       vehicleRepo(vehicleRepository),
@@ -55,22 +40,22 @@ void AutoWorkshopManager::addCustomer(const Customer &customer) {
     fileManager.saveCustomers(customerRepo.getCustomers());
 }
 
-int AutoWorkshopManager::acceptVehicles(int customerId, int vehicleId, const string &customerStatement) {
+int AutoWorkshopManager::acceptVehicles(int customerId, int vehicleId, const std::string &customerStatement) {
 
     if (!customerRepo.customerExists(customerId)) {
-        throw invalid_argument("Invalid customer ID: " + to_string(customerId));
+        throw std::invalid_argument("Invalid customer ID: " + std::to_string(customerId));
     }
     if (!vehicleRepo.vehicleExists(vehicleId)) {
-        throw invalid_argument("Invalid vehicle ID: " + to_string(vehicleId));
+        throw std::invalid_argument("Invalid vehicle ID: " + std::to_string(vehicleId));
     }
 
     const Vehicle& vehicle = vehicleRepo.findVehicleById(vehicleId);
     if (vehicle.getCustomerId() != customerId) {
-        throw invalid_argument("Vehicle does not belong to the specified customer!");
+        throw std::invalid_argument("Vehicle does not belong to the specified customer!");
     }
 
     if (orderRepo.findActiveRepairByVehicleId(vehicleId) != nullptr) {
-        throw invalid_argument("Cannot admit a vehicle which already is in the Workshop!");
+        throw std::invalid_argument("Cannot admit a vehicle which already is in the Workshop!");
     }
 
     int newOrderId = orderRepo.getNextRepairOrderId();
@@ -82,23 +67,23 @@ int AutoWorkshopManager::acceptVehicles(int customerId, int vehicleId, const str
     return newOrderId;
 }
 
-void AutoWorkshopManager::editCustomer(int customerId, const string &name, const string &phoneNumber) {
+void AutoWorkshopManager::editCustomer(int customerId, const std::string &name, const std::string &phoneNumber) {
     customerRepo.editCustomer(customerId, name, phoneNumber);
     fileManager.saveCustomers(customerRepo.getCustomers());
 }
 
-vector<Customer> AutoWorkshopManager::findCustomersByName(const string &namePart) const {
-    const string needle = normalizeForSearch(namePart);
+std::vector<Customer> AutoWorkshopManager::findCustomersByName(const std::string &namePart) const {
+    const std::string needle = StringUtils::normalizeForSearch(namePart);
 
     if (needle.empty()) {
-        throw invalid_argument("Empty search!");
+        throw std::invalid_argument("Empty search!");
     }
 
-    vector<Customer> result;
+    std::vector<Customer> result;
 
     for (const Customer& customer : customerRepo.getCustomers()) {
-        if (normalizeForSearch(customer.getName()).find(needle)
-            != string::npos) {
+        if (StringUtils::normalizeForSearch(customer.getName()).find(needle)
+            != std::string::npos) {
             result.push_back(customer);
             }
     }
@@ -114,7 +99,7 @@ const Customer& AutoWorkshopManager::findCustomerById(int clientId ) const {
 void AutoWorkshopManager::addVehicle(const Vehicle &vehicle) {
 
     if (!customerRepo.customerExists(vehicle.getCustomerId())) {
-        throw invalid_argument("Invalid customer ID: " + to_string(vehicle.getCustomerId()));
+        throw std::invalid_argument("Invalid customer ID: " + std::to_string(vehicle.getCustomerId()));
     }
     vehicleRepo.addVehicle(vehicle);
     fileManager.saveVehicles(vehicleRepo.getVehicles());
@@ -126,9 +111,8 @@ void AutoWorkshopManager::editVehicle(int vehicleId, const std::string &brand, c
     fileManager.saveVehicles(vehicleRepo.getVehicles());
 }
 
-vector<Vehicle> AutoWorkshopManager::getVehiclesByCustomerId(int customerId) const {
-
-    vector<Vehicle> result;
+std::vector<Vehicle> AutoWorkshopManager::getVehiclesByCustomerId(int customerId) const {
+    std::vector<Vehicle> result;
 
     for (const Vehicle& v : vehicleRepo.getVehicles()) {
         if (v.getCustomerId() == customerId) {
@@ -175,7 +159,7 @@ void AutoWorkshopManager::addParts(int orderId, const Part &part) {
     fileManager.saveRepairs(orderRepo.getRepairOrders());
 }
 
-const RepairOrder * AutoWorkshopManager::findActiveRepairByRegNum(const string &regNum) const {
+const RepairOrder * AutoWorkshopManager::findActiveRepairByRegNum(const std::string &regNum) const {
     int foundVehicleId = -1;
     for (const Vehicle& v : vehicleRepo.getVehicles()) {
         if (v.getVehicleRegNum() == regNum) {
@@ -185,14 +169,14 @@ const RepairOrder * AutoWorkshopManager::findActiveRepairByRegNum(const string &
     }
 
     if (foundVehicleId == -1) {
-        throw invalid_argument("Cannot find vehicle with registration number: " + regNum);
+        throw std::invalid_argument("Cannot find vehicle with registration number: " + regNum);
     }
 
     // След това търсим по ID на колата в поръчките
     return orderRepo.findActiveRepairByVehicleId(foundVehicleId);
 }
 
-vector<RepairOrder> AutoWorkshopManager::getRepairHistoryByRegNum(const string &regNum) const {
+std::vector<RepairOrder> AutoWorkshopManager::getRepairHistoryByRegNum(const std::string &regNum) const {
     const Vehicle* vehicle = nullptr;
 
     for (const Vehicle& v : vehicleRepo.getVehicles()) {
@@ -203,12 +187,12 @@ vector<RepairOrder> AutoWorkshopManager::getRepairHistoryByRegNum(const string &
     }
 
     if (!vehicle) {
-        throw invalid_argument(
+        throw std::invalid_argument(
             "Cannot find vehicle with registration number: " + regNum
         );
     }
 
-    vector<RepairOrder> history;
+    std::vector<RepairOrder> history;
 
     for (const RepairOrder& order : orderRepo.getRepairOrders()) {
         if (order.getVehicleId() == vehicle->getVehicleId()) {
@@ -257,7 +241,7 @@ const RepairOrder& AutoWorkshopManager::getOrderById(
     return orderRepo.findOrderById(orderId);
 }
 
-vector<RepairOrder> AutoWorkshopManager::listUnfinishedRepairs() const {
+std::vector<RepairOrder> AutoWorkshopManager::listUnfinishedRepairs() const {
     return orderRepo.getUnfinishedRepairs();
 }
 

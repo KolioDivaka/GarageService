@@ -7,11 +7,8 @@
 #include <limits>
 #include <stdexcept>
 
-namespace{
-    bool isBlank(const string& text) {
-        return text.find_first_not_of(" \t\r\n\f\v") == string::npos;
-    }
-};
+#include "../Utility/StringUtils.h"
+
 
 Vehicle & VehicleRepository::findVehicleById(int vehicleId) {
     Vehicle* vehicle = nullptr;
@@ -23,7 +20,7 @@ Vehicle & VehicleRepository::findVehicleById(int vehicleId) {
         }
     }
     if (!vehicle) {
-        throw invalid_argument("Cannot find vehicle with ID:"+to_string(vehicleId));
+        throw std::invalid_argument("Cannot find vehicle with ID:"+ std::to_string(vehicleId));
     }
 
     return *vehicle;
@@ -62,36 +59,39 @@ void VehicleRepository::addVehicle(const Vehicle &vehicle) {
 
 }
 
-void VehicleRepository::editVehicle(int vehicleId, const string &brand, const string &model, const string &regNumber,
-    optional<int> yearOfManufacture) {
+void VehicleRepository::editVehicle(int vehicleId,
+    const std::string &brand,
+    const std::string &model,
+    const std::string &regNumber,
+    std::optional<int> yearOfManufacture) {
 
     Vehicle& vehicle = findVehicleById(vehicleId);
 
-    if (isBlank(brand)
-        && isBlank(model)
-        && isBlank(regNumber)
+    if (StringUtils::isBlank(brand)
+        && StringUtils::isBlank(model)
+        && StringUtils::isBlank(regNumber)
         && !yearOfManufacture.has_value()) {
         return;
         }
 
     Vehicle updatedVehicle = vehicle;
 
-    if (!isBlank(brand)) {
+    if (!StringUtils::isBlank(brand)) {
         updatedVehicle.setVehicleBrand(brand);
     }
 
-    if (!isBlank(model)) {
+    if (!StringUtils::isBlank(model)) {
         updatedVehicle.setVehicleModel(model);
     }
 
-    if (!isBlank(regNumber)) {
+    if (!StringUtils::isBlank(regNumber)) {
         updatedVehicle.setVehicleRegNumber(regNumber);
 
         for (const Vehicle& other : vehicles) {
             if (other.getVehicleId() != vehicleId
                 && other.getVehicleRegNum()
                     == updatedVehicle.getVehicleRegNum()) {
-                throw invalid_argument(
+                throw std::invalid_argument(
                     "Vehicle registration already exists: "
                     + updatedVehicle.getVehicleRegNum()
                 );
@@ -124,13 +124,13 @@ void VehicleRepository::updateNextVehicleId() {
     int maxVehicleId = 0;
 
     for (const Vehicle& v : vehicles) {
-        maxVehicleId = max(maxVehicleId,v.getVehicleId());
+        maxVehicleId = std::max(maxVehicleId,v.getVehicleId());
     }
 
     constexpr int maxInt = std::numeric_limits<int>::max();
 
     if (maxVehicleId == maxInt) {
-        throw overflow_error(
+        throw std::overflow_error(
             "Cannot generate repair order IDs: int limit reached!");
     }
 

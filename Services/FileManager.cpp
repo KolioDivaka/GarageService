@@ -15,10 +15,57 @@
 
 namespace {
     using TimePoint = std::chrono::system_clock::time_point;
+    std::optional<TimePoint> readSavedDate(const std::string& text) {
+        if (text == "-") {
+            return std::nullopt;
+        }
 
-    std::optional<TimePoint> readSavedDate(const std::string& text);
+        std::istringstream input(text);
+        long long seconds;
 
-    std::string writeSavedDate(const std::optional<TimePoint>& date);
+        if (!(input >> seconds)) {
+            throw std::runtime_error("Invalid saved date: " + text);
+        }
+
+        input >> std::ws;
+
+        if (!input.eof()) {
+            throw std::runtime_error("Invalid saved date: " + text);
+        }
+
+        constexpr auto minSeconds =
+            std::chrono::duration_cast<std::chrono::seconds>(
+                TimePoint::min().time_since_epoch()
+            ).count();
+
+        constexpr auto maxSeconds =
+            std::chrono::duration_cast<std::chrono::seconds>(
+                TimePoint::max().time_since_epoch()
+            ).count();
+
+        if (seconds < minSeconds || seconds > maxSeconds) {
+            throw std::runtime_error("Saved date is out of range!");
+        }
+
+        return TimePoint{
+            std::chrono::duration_cast<TimePoint::duration>(
+                std::chrono::seconds{seconds}
+            )
+        };
+    }
+
+    std::string writeSavedDate(const std::optional<TimePoint>& date) {
+        if (!date.has_value()) {
+            return "-";
+        }
+
+        const auto seconds =
+            std::chrono::duration_cast<std::chrono::seconds>(
+                date->time_since_epoch()
+            ).count();
+
+        return std::to_string(seconds);
+    }
 }
 
 std::vector<Customer> FileManager::loadCustomers() const {
@@ -524,56 +571,3 @@ void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const {
     }
 }
 
-namespace {
-    std::optional<TimePoint> readSavedDate(const std::string& text) {
-        if (text == "-") {
-            return std::nullopt;
-        }
-
-        std::istringstream input(text);
-        long long seconds;
-
-        if (!(input >> seconds)) {
-            throw std::runtime_error("Invalid saved date: " + text);
-        }
-
-        input >> std::ws;
-
-        if (!input.eof()) {
-            throw std::runtime_error("Invalid saved date: " + text);
-        }
-
-        constexpr auto minSeconds =
-            std::chrono::duration_cast<std::chrono::seconds>(
-                TimePoint::min().time_since_epoch()
-            ).count();
-
-        constexpr auto maxSeconds =
-            std::chrono::duration_cast<std::chrono::seconds>(
-                TimePoint::max().time_since_epoch()
-            ).count();
-
-        if (seconds < minSeconds || seconds > maxSeconds) {
-            throw std::runtime_error("Saved date is out of range!");
-        }
-
-        return TimePoint{
-            std::chrono::duration_cast<TimePoint::duration>(
-                std::chrono::seconds{seconds}
-            )
-        };
-    }
-
-    std::string writeSavedDate(const std::optional<TimePoint>& date) {
-        if (!date.has_value()) {
-            return "-";
-        }
-
-        const auto seconds =
-            std::chrono::duration_cast<std::chrono::seconds>(
-                date->time_since_epoch()
-            ).count();
-
-        return std::to_string(seconds);
-    }
-}

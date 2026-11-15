@@ -9,10 +9,6 @@
 
 #include "../Services/AutoWorkshopManager.h"
 
-class Customer;
-class Vehicle;
-class RepairOrder;
-
 
 class RepairBill {
 private:

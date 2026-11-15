@@ -8,11 +8,7 @@
 
 #include <stdexcept>
 
-namespace{
-    bool isBlank(const string& text) {
-        return text.find_first_not_of(" \t\r\n\f\v") == string::npos;
-    }
-};
+#include "../Utility/StringUtils.h"
 
 
 CustomerRepository::CustomerRepository(const std::vector<Customer> &initialCustomers) {
@@ -22,11 +18,11 @@ CustomerRepository::CustomerRepository(const std::vector<Customer> &initialCusto
 
 void CustomerRepository::addCustomer(const Customer &customer) {
     if (customerExists(customer.getCustomerId())) {
-        throw invalid_argument( "Customer ID already exists: " + to_string(customer.getCustomerId()) );
+        throw std::invalid_argument( "Customer ID already exists: " + std::to_string(customer.getCustomerId()) );
     }
 
     if (customer.getCustomerId() == std::numeric_limits<int>::max()) {
-        throw overflow_error("Cannot add customer: ID limit reached!");
+        throw std::overflow_error("Cannot add customer: ID limit reached!");
     }
 
     customers.push_back(customer);
@@ -54,23 +50,23 @@ Customer & CustomerRepository::findCustomerById(int customerId) {
         }
     }
     if (!customer) {
-        throw invalid_argument("Cannot find customer with ID:"+to_string(customerId));
+        throw std::invalid_argument("Cannot find customer with ID:"+ std::to_string(customerId));
     }
     return *customer;
 }
 
-void CustomerRepository::editCustomer(int customerId, const string &name, const string &phoneNumber) {
+void CustomerRepository::editCustomer(int customerId, const std::string &name, const std::string &phoneNumber) {
     Customer& customer = findCustomerById(customerId);
 
-    if (isBlank(name) && isBlank(phoneNumber)) {
+    if (StringUtils::isBlank(name) && StringUtils::isBlank(phoneNumber)) {
         return;
     }
 
     Customer updatedCustomer = customer;
-    if (!isBlank(name)) {
+    if (!StringUtils::isBlank(name)) {
         updatedCustomer.setName(name);
     }
-    if (!isBlank(phoneNumber)) {
+    if (!StringUtils::isBlank(phoneNumber)) {
         updatedCustomer.setPhoneNumber(phoneNumber);
     }
     customer = updatedCustomer;
@@ -80,14 +76,14 @@ void CustomerRepository::updateNextCustomerId() {
     int maxCustomerId = 0;
 
     for (const Customer& customer : customers) {
-        maxCustomerId = max(maxCustomerId, customer.getCustomerId());
+        maxCustomerId = std::max(maxCustomerId, customer.getCustomerId());
     }
 
     constexpr int maxInt = std::numeric_limits<int>::max();
 
 
     if (maxCustomerId == maxInt) {
-        throw overflow_error(
+        throw std::overflow_error(
             "Cannot generate repair order IDs: int limit reached!");
     }
     nextCustomerId = maxCustomerId+1;

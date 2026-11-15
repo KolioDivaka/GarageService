@@ -10,20 +10,20 @@
 
 void DataLoader::validateData(const std::vector<Customer> &customers, const std::vector<Vehicle> &vehicles,
                               const std::vector<RepairOrder> &repairOrders) const {
-    pmr::unordered_set<int> customerIds;
-    unordered_set<int> vehicleIds;
-    unordered_set<int> orderIds;
-    unordered_set<int> vehiclesWithActiveOrders;
-    unordered_set<string> registrationNumbers;
+    std::unordered_set<int> customerIds;
+    std::unordered_set<int> vehicleIds;
+    std::unordered_set<int> orderIds;
+    std::unordered_set<int> vehiclesWithActiveOrders;
+    std::unordered_set<std::string> registrationNumbers;
 
     for (const Customer& customer : customers) {
         const int id = customer.getCustomerId();
 
         if (id <= 0) {
-            throw runtime_error("Invalid customer ID: " + to_string(id));
+            throw std::runtime_error("Invalid customer ID: " + std::to_string(id));
         }
         if (!customerIds.insert(id).second) {
-            throw runtime_error("Duplicate customer ID: " + to_string(id));
+            throw std::runtime_error("Duplicate customer ID: " + std::to_string(id));
         }
     }
 
@@ -32,21 +32,21 @@ void DataLoader::validateData(const std::vector<Customer> &customers, const std:
         const int ownerId = vehicle.getCustomerId();
 
         if (id <= 0) {
-            throw runtime_error("Invalid vehicle ID: " + to_string(id));
+            throw std::runtime_error("Invalid vehicle ID: " + std::to_string(id));
         }
 
         if (!vehicleIds.insert(id).second) {
-            throw runtime_error("Duplicate vehicle ID: " + to_string(id));
+            throw std::runtime_error("Duplicate vehicle ID: " + std::to_string(id));
         }
         if (!customerIds.contains(ownerId)) {
-            throw runtime_error("Vehicle "
-                + to_string(id)
-                + " refers to missing customer "
-                + to_string(ownerId));
+            throw std::runtime_error("Vehicle "
+                                     + std::to_string(id)
+                                     + " refers to missing customer "
+                                     + std::to_string(ownerId));
         }
         if (!registrationNumbers.insert(vehicle.getVehicleRegNum()).second) {
-            throw runtime_error("Duplicate vehicle registration number: "
-                + vehicle.getVehicleRegNum()
+            throw std::runtime_error("Duplicate vehicle registration number: "
+                                     + vehicle.getVehicleRegNum()
             );
         }
     }
@@ -57,28 +57,28 @@ void DataLoader::validateData(const std::vector<Customer> &customers, const std:
         const int vehicleId = order.getVehicleId();
 
         if (id <= 0) {
-            throw runtime_error("Invalid order ID: " + to_string(id));
+            throw std::runtime_error("Invalid order ID: " + std::to_string(id));
         }
 
         if (!orderIds.insert(id).second) {
-            throw runtime_error("Duplicate order ID: " + to_string(id));
+            throw std::runtime_error("Duplicate order ID: " + std::to_string(id));
         }
 
         if (!customerIds.contains(customerId)) {
-            throw runtime_error("Repair order " + to_string(id)
-                + " refers to missing customer " +
-                to_string(customerId));
+            throw std::runtime_error("Repair order " + std::to_string(id)
+                                     + " refers to missing customer " +
+                                     std::to_string(customerId));
         }
         if (!vehicleIds.contains(vehicleId)) {
-            throw runtime_error("Repair order " + to_string(id)
-                + " refers to missing vehicle " +
-                to_string(vehicleId));
+            throw std::runtime_error(std::to_string(vehicleId) +
+                                     ("Repair order " + std::to_string(id)
+                                      + " refers to missing vehicle "));
         }
         if (order.getStatus() == RepairStatus::Accepted
                 || order.getStatus() == RepairStatus::InProgress) {
              if (!vehiclesWithActiveOrders.insert(vehicleId).second) {
-                    throw runtime_error(
-                        "Vehicle " + to_string(vehicleId)
+                    throw std::runtime_error(
+                        "Vehicle " + std::to_string(vehicleId)
                         + " has multiple active repair orders!"
                     );
                 }
@@ -88,10 +88,9 @@ void DataLoader::validateData(const std::vector<Customer> &customers, const std:
 
 void DataLoader::loadIntoRepositories(CustomerRepository &customerRepo, VehicleRepository &vehicleRepo,
                                     RepairOrderRepository &orderRepo) {
-
-    vector<Customer> customers = fileManager->loadCustomers();
-    vector<Vehicle> vehicles = fileManager->loadVehicles();
-    vector<RepairOrder> repairOrders = fileManager->loadRepairOrders();
+    std::vector<Customer> customers = fileManager->loadCustomers();
+    std::vector<Vehicle> vehicles = fileManager->loadVehicles();
+    std::vector<RepairOrder> repairOrders = fileManager->loadRepairOrders();
 
 
     validateData(customers, vehicles, repairOrders);

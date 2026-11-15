@@ -8,8 +8,7 @@ namespace StringUtils {
         result.reserve(text.size());
 
         for (const unsigned char ch : text) {
-            // Използваме std::isblank от <cctype>, за да филтрираме интервали и табулации
-            if (!std::isblank(ch)) {
+        if (!std::isblank(ch)) {
                 result += static_cast<char>(std::tolower(ch));
             }
         }
