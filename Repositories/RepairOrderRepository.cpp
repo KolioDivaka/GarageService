@@ -10,25 +10,24 @@ void RepairOrderRepository::updateNextId() {
     int maxRepairOrderId = 0;
 
     for (const RepairOrder& order : repairOrders) {
-        maxRepairOrderId = max(maxRepairOrderId, order.getOrderId());
+        maxRepairOrderId = std::max(maxRepairOrderId, order.getOrderId());
     }
 
-    constexpr int maxInt = numeric_limits<int>::max();
+    constexpr int maxInt = std::numeric_limits<int>::max();
 
     if (maxRepairOrderId == maxInt) {
-        throw overflow_error("Cannot generate repair order IDs: int limit reached!");
+        throw std::overflow_error("Cannot generate repair order IDs: int limit reached!");
     }
 
     nextRepairOrderId = maxRepairOrderId + 1;
 }
 
-RepairOrderRepository::RepairOrderRepository(const vector<RepairOrder> &initialOrders) {
-}
+
 
 void RepairOrderRepository::addOrder(const RepairOrder& order) {
     for (const auto& existingOrder : repairOrders) {
         if (existingOrder.getOrderId() == order.getOrderId()) {
-            throw invalid_argument("Repair order ID already exists: " + to_string(order.getOrderId()));
+            throw std::invalid_argument("Repair order ID already exists: " + std::to_string(order.getOrderId()));
         }
     }
 
@@ -44,7 +43,7 @@ RepairOrder & RepairOrderRepository::findOrderById(int orderId) {
             return order;
         }
     }
-    throw invalid_argument("Cannot find an order with ID: " + to_string(orderId));
+    throw std::invalid_argument("Cannot find an order with ID: " + std::to_string(orderId));
 }
 
 const RepairOrder& RepairOrderRepository::findOrderById(int orderId) const {
@@ -53,7 +52,7 @@ const RepairOrder& RepairOrderRepository::findOrderById(int orderId) const {
             return order;
         }
     }
-    throw invalid_argument("Cannot find an order with ID: " + to_string(orderId));
+    throw std::invalid_argument("Cannot find an order with ID: " + std::to_string(orderId));
 }
 
 const RepairOrder * RepairOrderRepository::findActiveRepairByVehicleId(int vehicleId) const {
@@ -66,8 +65,8 @@ const RepairOrder * RepairOrderRepository::findActiveRepairByVehicleId(int vehic
     return nullptr;
 }
 
-vector<RepairOrder> RepairOrderRepository::getUnfinishedRepairs() const {
-    vector<RepairOrder> unfinishedRepairs;
+std::vector<RepairOrder> RepairOrderRepository::getUnfinishedRepairs() const {
+    std::vector<RepairOrder> unfinishedRepairs;
     for (const RepairOrder& order : repairOrders) {
         if (order.getStatus() == RepairStatus::Accepted || order.getStatus() == RepairStatus::InProgress) {
             unfinishedRepairs.push_back(order);
@@ -76,11 +75,12 @@ vector<RepairOrder> RepairOrderRepository::getUnfinishedRepairs() const {
     return unfinishedRepairs;
 }
 
-const vector<RepairOrder> &RepairOrderRepository::getRepairOrders() const {
+
+std::vector<RepairOrder> RepairOrderRepository::getRepairOrders() const {
     return repairOrders;
 }
 
-void RepairOrderRepository::setRepairOrders(const vector<RepairOrder> &orders) {
+void RepairOrderRepository::setRepairOrders(const std::vector<RepairOrder> &orders) {
     repairOrders = orders;
     updateNextId();
 }

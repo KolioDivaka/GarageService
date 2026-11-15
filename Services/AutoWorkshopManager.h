@@ -5,19 +5,16 @@
 #include <vector>
 #include <string>
 #include <optional>
-
 #include "FileManager.h"
 #include "../Models/Customer.h"
 #include "../Models/Vehicle.h"
 #include "../Models/RepairOrder.h"
 #include "../Models/RepairService.h"
 #include "../Models/Part.h"
+#include "../Repositories/CustomerRepository.h"
+#include "../Repositories/VehicleRepository.h"
+#include "../Repositories/RepairOrderRepository.h"
 
-
-// Forward declarations за репозиторитата, за да избегнем кръгови зависимости
-class CustomerRepository;
-class VehicleRepository;
-class RepairOrderRepository;
 
 class AutoWorkshopManager {
 private:

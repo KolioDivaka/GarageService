@@ -10,11 +10,11 @@
 #include "../Services/FileManager.h"
 
 class Customer;
-using namespace std;
+
 class CustomerRepository {
 
 private:
-    vector<Customer> customers;
+    std::vector<Customer> customers;
     int  nextCustomerId= 1;
 
 public:
@@ -26,10 +26,10 @@ public:
     void addCustomer( const Customer &customer );
     [[nodiscard]] bool customerExists(int customerId) const;
     Customer& findCustomerById(int customerId);
-    void editCustomer( int customerId, const string& name, const string& phoneNumber);
+    void editCustomer( int customerId, const std::string& name, const std::string& phoneNumber);
 
 
-    [[nodiscard]] vector<Customer> getCustomers() const {
+    [[nodiscard]] std::vector<Customer> getCustomers() const {
         return customers;
     }
 
@@ -37,7 +37,7 @@ public:
         return nextCustomerId;
     }
 
-    void setCustomers( const vector<Customer>& loadedCustomers ) {
+    void setCustomers( const std::vector<Customer>& loadedCustomers ) {
        this->customers = loadedCustomers;
         updateNextCustomerId();
     }

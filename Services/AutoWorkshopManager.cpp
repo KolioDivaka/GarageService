@@ -15,7 +15,7 @@
 #include "../Repositories/VehicleRepository.h"
 #include "../Repositories/RepairOrderRepository.h"
 
-using namespace std;
+
 namespace {
     string normalizeForSearch(const string& text) {
         string result;

@@ -25,6 +25,7 @@ const Vehicle& RepairBill::getVehicle() const noexcept {
     return vehicle;
 }
 
+
 std::ostream& operator<<(std::ostream& os, const RepairBill& bill) {
     const auto flags = os.flags();
     const auto precision = os.precision();

@@ -5,24 +5,23 @@
 #ifndef GARAGESERVICE_REPAIRORDERREPOSITORY_H
 #define GARAGESERVICE_REPAIRORDERREPOSITORY_H
 #include <vector>
+#include "../Models/RepairOrder.h"
 
 
 
-class RepairOrder;
-
-using namespace std;
 
 class RepairOrderRepository {
 
 private:
-    vector<RepairOrder> repairOrders;
+    std::vector<RepairOrder> repairOrders;
     int nextRepairOrderId = 1;
 
     void updateNextId();
 
 public:
     RepairOrderRepository() = default;
-    explicit RepairOrderRepository(const vector<RepairOrder>& initialOrders);
+    RepairOrderRepository(const RepairOrderRepository& other)
+    : repairOrders(other.repairOrders) {}
 
     void addOrder(const RepairOrder& order);
 
@@ -30,10 +29,11 @@ public:
     const RepairOrder& findOrderById(int orderId) const;
 
     const RepairOrder* findActiveRepairByVehicleId(int vehicleId) const;
-    vector<RepairOrder> getUnfinishedRepairs() const;
 
-    const vector<RepairOrder>& getRepairOrders() const;
-    void setRepairOrders(const vector<RepairOrder>& orders);
+    std::vector<RepairOrder> getUnfinishedRepairs() const;
+
+    std::vector<RepairOrder> getRepairOrders() const;
+    void setRepairOrders(const std::vector<RepairOrder>& orders);
     int getNextRepairOrderId() const;
 
 

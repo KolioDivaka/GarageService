@@ -12,7 +12,7 @@
 class Customer;
 class Vehicle;
 class RepairOrder;
-using namespace std;
+
 
 class RepairBill {
 private:
@@ -27,13 +27,14 @@ public:
         const Vehicle& vehicle
     ) noexcept : order(order), customer(customer), vehicle(vehicle) {};
 
+    RepairBill(const RepairBill& other) noexcept
+        : order(other.order), customer(other.customer), vehicle(other.vehicle) {}
+
     const RepairOrder& getOrder() const noexcept;
     const Customer& getCustomer() const noexcept;
     const Vehicle& getVehicle() const noexcept;
 
-    void setOrder(const RepairOrder& newOrder) noexcept;
-    void setCustomer(const Customer& newCustomer) noexcept;
-    void setVehicle(const Vehicle& newVehicle) noexcept;
+
 };
 
 std::ostream& operator<<(std::ostream& os, const RepairBill& bill);

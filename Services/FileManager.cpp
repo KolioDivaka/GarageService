@@ -11,13 +11,14 @@
 #include <iomanip>
 #include <sstream>
 
-using namespace std;
+
 
 namespace {
     using TimePoint = std::chrono::system_clock::time_point;
 
     std::optional<TimePoint> readSavedDate(const std::string& text);
-    string writeSavedDate(const optional<TimePoint>& date);
+
+    std::string writeSavedDate(const std::optional<TimePoint>& date);
 }
 
 std::vector<Customer> FileManager::loadCustomers() const {
@@ -31,10 +32,10 @@ std::vector<Customer> FileManager::loadCustomers() const {
         throw std::runtime_error(std::string("Cannot open file: ") + std::string(getCustomersFilename()));
     }
 
-    vector<Customer> loadedCustomers;
+    std::vector<Customer> loadedCustomers;
     std::unordered_set<int> usedIds; // Поправено от pmr::unordered_set
 
-    string line;
+    std::string line;
     int lineNum = 0;
     while (std::getline(file, line)) {
         ++lineNum;
@@ -43,14 +44,14 @@ std::vector<Customer> FileManager::loadCustomers() const {
             continue;
         }
 
-        istringstream row(line);
+        std::istringstream row(line);
 
         int customerId;
-        string name;
-        string phoneNumber;
+        std::string name;
+        std::string phoneNumber;
 
         if (!(row >> customerId >> std::quoted(name) >> std::quoted(phoneNumber))) {
-            throw std::runtime_error("Invalid customer record at line " + to_string(lineNum));
+            throw std::runtime_error("Invalid customer record at line " + std::to_string(lineNum));
         }
 
         row >> std::ws;
@@ -194,21 +195,21 @@ std::vector<Vehicle> FileManager::loadVehicles() const {
 }
 
 std::vector<RepairOrder> FileManager::loadRepairOrders() const {
-    if (!filesystem::exists(std::string(getRepairOrdersFilename()))) {
+    if (!std::filesystem::exists(std::string(getRepairOrdersFilename()))) {
         return {};
     }
 
-    ifstream file{std::string(getRepairOrdersFilename())};
+    std::ifstream file{std::string(getRepairOrdersFilename())};
 
     if (!file.is_open()) {
         throw std::runtime_error(
-            string("Cannot open file: ") + std::string(getRepairOrdersFilename()));
+            std::string("Cannot open file: ") + std::string(getRepairOrdersFilename()));
     }
 
-    vector<RepairOrder> loadedOrders;
-    unordered_set<int> usedIds;
+    std::vector<RepairOrder> loadedOrders;
+    std::unordered_set<int> usedIds;
 
-    string line;
+    std::string line;
     int lineNumber = 0;
 
     auto readNextLine = [&]() -> bool {
@@ -242,7 +243,7 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const {
     auto readCount = [&]() -> int {
         requireNextLine();
 
-        istringstream row(line);
+        std::istringstream row(line);
         int count;
         if (!(row >> count) || count < 0 || count > MAX_ITEMS_PER_ORDER) {
             throw std::runtime_error("Invalid item count!");
@@ -253,17 +254,17 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const {
 
     while (readNextLine()) {
         try {
-            istringstream row(line);
+            std::istringstream row(line);
 
             int orderId;
             int customerId;
             int vehicleId;
             int statusCode;
 
-            string acceptedText;
-            string completedText;
-            string paidText;
-            string customerStatement;
+            std::string acceptedText;
+            std::string completedText;
+            std::string paidText;
+            std::string customerStatement;
 
             if (!(row >> orderId
                 >> customerId
@@ -303,14 +304,14 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const {
                 throw std::runtime_error("Acceptance date is required!");
             }
 
-            vector<RepairService> services;
+            std::vector<RepairService> services;
             const int serviceCount = readCount();
 
             for (int i = 0; i < serviceCount; ++i) {
                 requireNextLine();
-                istringstream serviceRow(line);
+                std::istringstream serviceRow(line);
 
-                string description;
+                std::string description;
                 double hours;
                 double hourlyRate;
 
@@ -323,15 +324,15 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const {
                 services.emplace_back(description, hours, hourlyRate);
             }
 
-            vector<Part> parts;
+            std::vector<Part> parts;
             const int partCount = readCount();
 
             for (int i = 0; i < partCount; ++i) {
                 requireNextLine();
-                istringstream partRow(line);
+                std::istringstream partRow(line);
 
-                string name;
-                string partNumber;
+                std::string name;
+                std::string partNumber;
                 double unitPrice;
                 int quantity;
 
@@ -374,17 +375,17 @@ std::vector<RepairOrder> FileManager::loadRepairOrders() const {
 }
 
 void FileManager::saveCustomers(const std::vector<Customer> &customers) const {
-    const filesystem::path targetPath = std::string(getCustomersFilename());
+    const std::filesystem::path targetPath = std::string(getCustomersFilename());
     std::cout << "Saving customers to: "
-              << filesystem::absolute(targetPath).string()
+              << absolute(targetPath).string()
               << '\n';
-    filesystem::path tempPath = targetPath;
+    std::filesystem::path tempPath = targetPath;
     tempPath += ".tmp";
 
-    ofstream file(tempPath, ios::out | ios::trunc);
+    std::ofstream file(tempPath, std::ios::out | std::ios::trunc);
 
     if (!file.is_open()) {
-        throw runtime_error("Cannot open temporary customers file: " + tempPath.string());
+        throw std::runtime_error("Cannot open temporary customers file: " + tempPath.string());
     }
 
     for (const Customer& customer : customers) {
@@ -395,11 +396,11 @@ void FileManager::saveCustomers(const std::vector<Customer> &customers) const {
     file.close();
 
     if (!file) {
-        throw runtime_error("Failed to write customers file: " + tempPath.string());
+        throw std::runtime_error("Failed to write customers file: " + tempPath.string());
     }
 
-    error_code error;
-    filesystem::rename(tempPath, targetPath, error);
+    std::error_code error;
+    rename(tempPath, targetPath, error);
     if (error) {
         throw std::runtime_error("Cannot replace customers file: " + error.message());
     }
@@ -451,18 +452,18 @@ void FileManager::saveVehicles(const std::vector<Vehicle> &vehicles) const {
 void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const {
     constexpr size_t MAX_ITEM_PER_ORDER = 10000;
 
-    const filesystem::path targetPath = std::string(getRepairOrdersFilename());
+    const std::filesystem::path targetPath = std::string(getRepairOrdersFilename());
 
-    filesystem::path tempPath = targetPath;
+    std::filesystem::path tempPath = targetPath;
     tempPath += ".tmp";
 
-    ofstream file(tempPath, ios::out | ios::trunc);
+    std::ofstream file(tempPath, std::ios::out | std::ios::trunc);
 
     if (!file.is_open()) {
         throw std::runtime_error("Cannot open temporary repairs file: " + tempPath.string());
     }
 
-    file << setprecision(numeric_limits<double>::max_digits10);
+    file << std::setprecision(std::numeric_limits<double>::max_digits10);
 
     for (const RepairOrder& order : orders) {
         const auto& services = order.getServices();
@@ -471,7 +472,7 @@ void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const {
         if (services.size() > MAX_ITEM_PER_ORDER ||
             parts.size() > MAX_ITEM_PER_ORDER) {
             throw std::runtime_error("Too many items in repair order: "
-                + to_string(order.getOrderId()));
+                + std::to_string(order.getOrderId()));
         }
 
         int statusCode;
@@ -481,7 +482,7 @@ void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const {
             case RepairStatus::InProgress: statusCode = 1; break;
             case RepairStatus::Completed: statusCode = 2; break;
             case RepairStatus::Paid: statusCode = 3; break;
-            default: throw runtime_error("Invalid repair status!");
+            default: throw std::runtime_error("Invalid repair status!");
         }
 
         file << order.getOrderId() << ' '
@@ -516,8 +517,8 @@ void FileManager::saveRepairs(const std::vector<RepairOrder> &orders) const {
             "Failed to write repairs file: " + tempPath.string());
     }
 
-    error_code error;
-    filesystem::rename(tempPath, targetPath, error);
+    std::error_code error;
+    rename(tempPath, targetPath, error);
     if (error) {
         throw std::runtime_error("Cannot replace repairs file: " + error.message());
     }
@@ -563,7 +564,7 @@ namespace {
         };
     }
 
-    string writeSavedDate(const optional<TimePoint>& date) {
+    std::string writeSavedDate(const std::optional<TimePoint>& date) {
         if (!date.has_value()) {
             return "-";
         }
