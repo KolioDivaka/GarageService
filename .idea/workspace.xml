@@ -34,9 +34,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e40acb6c-1601-4e53-8dc2-47572b8dfac9" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ConsoleUI/RepairOrderUIHandler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ConsoleUI/RepairOrderUIHandler.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/AutoWorkshopManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Services/AutoWorkshopManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utility/DateUtils.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Utility/DateUtils.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ConsoleUI/CustomerUIHandler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ConsoleUI/CustomerUIHandler.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

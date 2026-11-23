@@ -48,7 +48,7 @@ void CustomerUIHandler::handleEditCustomer() {
 int CustomerUIHandler::chooseCustomer() {
     while (true) {
         const std::string namePart =
-          ConsoleInput::readLine("Search customer by name (or 'n' for new): ");
+          ConsoleInput::readLine("Search customer by name (or 'n' for new, 'q' to cancel): ");
 
         if (namePart == "n" || namePart == "N") {
             const int newId = promptNewCustomer();
@@ -56,6 +56,10 @@ int CustomerUIHandler::chooseCustomer() {
                 return newId;
             }
             continue;
+        }
+        if (namePart == "q" || namePart == "Q") {
+            std::cout << "Search Cancelled!.\n";
+            return 0;
         }
 
         std::vector<Customer> matches;
