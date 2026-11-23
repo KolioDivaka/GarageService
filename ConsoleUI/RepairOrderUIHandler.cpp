@@ -203,7 +203,6 @@ void RepairOrderUIHandler::showBill(int orderId) const {
     const Customer& customer = manager.findCustomerById(order.getCustomerId());
     const Vehicle& vehicle = manager.findVehicleById(order.getVehicleId());
 
-    // Използва пренаписания operator<< на RepairBill
     std::cout << "\n" << RepairBill(order, customer, vehicle) << "\n";
 }
 

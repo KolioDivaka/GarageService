@@ -79,8 +79,7 @@ namespace DateUtils {
             );
         }
 
-        // mktime може да премести невалидна дата
-        // в следващ месец — отхвърляме такава промяна.
+
         if (calendarDate.tm_mday != day
             || calendarDate.tm_mon != month - 1
             || calendarDate.tm_year != year - 1900) {

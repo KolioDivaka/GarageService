@@ -40,7 +40,7 @@ void AutoWorkshopManager::addCustomer(const Customer &customer) {
     fileManager.saveCustomers(customerRepo.getCustomers());
 }
 
-int AutoWorkshopManager::acceptVehicles(int customerId, int vehicleId, const std::string &customerStatement) {
+int AutoWorkshopManager:: acceptVehicles(int customerId, int vehicleId, const std::string &customerStatement) {
 
     if (!customerRepo.customerExists(customerId)) {
         throw std::invalid_argument("Invalid customer ID: " + std::to_string(customerId));
@@ -76,7 +76,7 @@ std::vector<Customer> AutoWorkshopManager::findCustomersByName(const std::string
     const std::string needle = StringUtils::normalizeForSearch(namePart);
 
     if (needle.empty()) {
-        throw std::invalid_argument("Empty search!");
+        return customerRepo.getCustomers();
     }
 
     std::vector<Customer> result;
@@ -89,7 +89,6 @@ std::vector<Customer> AutoWorkshopManager::findCustomersByName(const std::string
     }
 
     return result;
-
 }
 
 const Customer& AutoWorkshopManager::findCustomerById(int clientId ) const {
